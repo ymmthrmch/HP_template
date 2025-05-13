@@ -1,14 +1,13 @@
 import {
     importExternalScript
-} from 'utils.js';
+} from './utils.js';
 
 let settings = {};
 let lang = 'ja';
 let t = {};
 
 async function loadSettingsAndTranslations() {
-    const pathLang = location.pathname.split('/')[1];
-    lang = settings.langs.includes(pathLang) ? pathLang : 'ja';
+    lang = location.pathname.split('/')[1];
     [settings, t] = await Promise.all([
         fetch('/data/settings.json').then(res => res.json()),
         fetch(`/locales/${lang}.json`).then(res => res.json()),
@@ -16,9 +15,7 @@ async function loadSettingsAndTranslations() {
 }
 
 loadSettingsAndTranslations()
-    .then(
-        readPages();
-    )
+    .then(() => readPage())
 
 async function readPage() {
     await addToHead();
@@ -33,11 +30,13 @@ async function readPage() {
         await MathJax.typesetPromise();
         }
     }
+
+    console.log("reaPage()");
 }
 
 async function addToHead () {
-    const promises = settings.externalLibraries.map(
-        lib => importExternalScript(lib.url, lib.defer)
+    const promises = settings.externalScripts.map(
+        scr => importExternalScript(scr.url, scr.defer)
     );
     await Promise.all(promises)
 }
