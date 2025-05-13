@@ -21,17 +21,10 @@ async function readPage() {
     await addToHead();
     await Promise.all([
         loadHeader(),
+        addToBody(),
         loadFooter(),
-        loadContentsList()
     ])
-
-    if (document.body.dataset.useMathjax === 'true') {
-        if (window.MathJax) {
-        await MathJax.typesetPromise();
-        }
-    }
-
-    console.log("reaPage()");
+    afterLoadDoms();
 }
 
 async function addToHead () {
@@ -45,7 +38,18 @@ function loadHeader() {
 
 }
 
+function addToBody{
+
+}
+
 function loadFooter() {
 
 }
 
+function afterLoadDoms{
+    if (document.body.dataset.useMathjax === 'true') {
+        if (window.MathJax) {
+        await MathJax.typesetPromise();
+        }
+    }
+}
