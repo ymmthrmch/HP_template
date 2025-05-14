@@ -38,7 +38,6 @@ async function readPage() {
 }
 
 async function addToHead () {
-    async function addToHead() {
     const scrlistRaw = document.body.dataset.scr || "";
     const scrlist = scrlistRaw.split(/\s+/).map(tag => tag.toLowerCase()); // タグを配列に
     const promises = Object.entries(settings.scripts)
@@ -50,7 +49,6 @@ async function addToHead () {
         .map(([key, scr]) => importScript(scr.url, scr.defer));
   
     await Promise.all(promises);
-    }
 }
 
 async function loadHeader() {
