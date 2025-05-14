@@ -1,10 +1,19 @@
 {
     "externalScripts": [
         {
-            "name": "MathJax",
-            "url": "https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js",
-            "defer": true
+            "externalScriptName":["url","BoolWheterDeferOrNot"],
+            "MathJax": ["https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js", true]
         }
     ],
-    "langs": ["ja","en"]
+    "langs": ["ja","en"],
+    "sns": {
+        "name": {
+            "icon": "path/to/icon/image",
+            "url": "url/to/your/account"
+        },
+        "x": {
+            "icon": "/images/x-logo-black.png",
+            "url": "https://x.com/username"
+        }
+    }
 }

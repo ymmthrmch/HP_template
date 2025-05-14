@@ -1,4 +1,5 @@
 import {
+    applyInterpolateToDOM,
     importExternalScript
 } from './utils.js';
 
@@ -24,29 +25,36 @@ async function readPage() {
         addToBody(),
         loadFooter(),
     ])
-    afterLoadDoms();
+    afterLoadDOM();
 }
 
 async function addToHead () {
-    const promises = settings.externalScripts.map(
-        scr => importExternalScript(scr.url, scr.defer)
-    );
+    // const promises = settings.externalScripts.map(
+    //     scr => importExternalScript(scr.key[0], scr.key[1])
+    // );
+    // await Promise.all(promises)
+}
+
+async function loadHeader() {
+
+}
+
+async function addToBody() {
+
+}
+
+async function loadFooter() {
+
+}
+
+async function afterLoadDOM() {
+    // 変数の置き換え
+    applyInterpolateToDOM(document,settings)
+
+    // 文字の装飾
+
+    // MathJaxのtypeset
     await Promise.all(promises)
-}
-
-function loadHeader() {
-
-}
-
-function addToBody{
-
-}
-
-function loadFooter() {
-
-}
-
-function afterLoadDoms{
     if (document.body.dataset.useMathjax === 'true') {
         if (window.MathJax) {
         await MathJax.typesetPromise();
