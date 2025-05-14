@@ -1,4 +1,8 @@
 {
+    "contentTypes": {
+        "example": {"ja":"例","en":"examples"}
+    },
+    "introLength": {"ja":150,"en":200},
     "langs": ["ja","en"],
     "scripts": {
         "scriptName": {
@@ -8,6 +12,11 @@
         },
         "MathJax": {
             "url": "https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js",
+            "defer": true,
+            "loadToAllPages": false
+        },
+        "pluralize": {
+            "url": "https://cdn.jsdelivr.net/npm/pluralize@8.0.0/pluralize.min.js",
             "defer": true,
             "loadToAllPages": false
         }

@@ -13,8 +13,9 @@ export function importScript(url, deferFlag = true) {
   });
 }
 
-export function applyInterpolateToDOM(root, context, lang) {
-    function interpolate(template) {
+export function interpolate(template,env) {
+        const settings = env.settings;
+        const lang = env.lang;
         return template.replace(/{{(.*?)}}/g, (_, key) => {
             const trimmedKey = key.trim();
 
@@ -23,7 +24,7 @@ export function applyInterpolateToDOM(root, context, lang) {
             }
 
             const path = trimmedKey.split('.');
-            let val = context;
+            let val = settings;
             for (const prop of path) {
                 if (val && typeof val === 'object' && prop in val) {
                     val = val[prop];
@@ -35,16 +36,155 @@ export function applyInterpolateToDOM(root, context, lang) {
         });
     }
 
+export function applyInterpolateToDOM(root, env) {
     for (const node of root.childNodes) {
         if (node.nodeType === Node.TEXT_NODE) {
-            node.textContent = interpolate(node.textContent);
+            node.textContent = interpolate(node.textContent, env);
         }
         if (node.nodeType === Node.ELEMENT_NODE) {
             for (const attr of node.attributes) {
-                attr.value = interpolate(attr.value);
+                attr.value = interpolate(attr.value, env);
             }
 
-            applyInterpolateToDOM(node, context, lang);
+            applyInterpolateToDOM(node, env);
         }
+    }
+}
+
+function extractHtmlSnippet(domNode, limit = 100, suffix = '') {
+    let count = 0;
+    let reachedLimit = false;
+
+    function cloneWithLimit(node) {
+        if (node.nodeType === Node.TEXT_NODE) {
+            if (reachedLimit) return null;
+
+            const text = node.textContent;
+            const remaining = limit - count;
+
+        if (text.length <= remaining) {
+            count += text.length;
+            return document.createTextNode(text);
+        } else {
+            count += remaining;
+            reachedLimit = true;
+            return document.createTextNode(text.slice(0, remaining));
+        }
+        }
+
+        if (node.nodeType === Node.ELEMENT_NODE) {
+            if (
+                node.tagName.toLowerCase() === 'p'
+                || node.tagName.toLowerCase() === 'div'
+                && node.classList.contains('content-text')
+            ) {
+                const fragment = document.createDocumentFragment();
+                for (const child of node.childNodes) {
+                    const limitedChild = cloneWithLimit(child);
+                    if (limitedChild) fragment.appendChild(limitedChild);
+                    if (reachedLimit) break;
+                }
+            return fragment;
+            }
+
+            const clone = node.cloneNode(false);
+            for (const child of node.childNodes) {
+                const limitedChild = cloneWithLimit(child);
+                if (limitedChild) clone.appendChild(limitedChild);
+                if (reachedLimit) break;
+            }
+        return clone;
+        }
+
+        return null;
+    }
+
+    const snippetNode = cloneWithLimit(domNode);
+    if (!snippetNode) return '';
+
+    const wrapper = document.createElement('div');
+    wrapper.appendChild(snippetNode);
+    if (reachedLimit && suffix) {
+        const suffixSpan = document.createElement('span');
+        suffixSpan.innerHTML = suffix;
+        wrapper.appendChild(suffixSpan);
+    }
+
+    return wrapper.outerHTML;
+}
+
+async function loadContents(contentType, pluralize, env) {
+    const contentTypeS = pluralize(contentType).toLowerCase();
+    const contentsList = document.getElementById(`${contentTypeS}-list`);
+    if (!contentsList) return;
+
+    const settings = env.settings
+    const lang = env.lang
+    const t = env.t
+    const listRes = await fetch(`/data/contents_list/${contentTypeS}.json`)
+    const allContents = await listRes.json()
+    if (!allContents || !Array.isArray(allContents) || allContents.length === 0) {
+        const noContentsMessage = document.createElement('div');
+        noContentsMessage.className = 'content no-contents-message';
+        noContentsMessage.textContent = t.noContents.replace(
+            "{{contentType}}",settings.contentTypes[contentType][lang]
+        ) ?? 'No contents here.';
+        contentsList.appendChild(noContentsMessage);
+        return;
+    }
+
+    const contents = allContents
+        .filter(contents => contents.lang.includes(lang))
+        .sort((a, b) => new Date(b.created) - new Date(a.created));
+
+    const templateRes = await fetch(`/includes/content-summary.html`)
+    const template = await templateRes.text()
+    const renderPromises = contents.map(async file => {
+        const pathToContent = contentTypeS + '/' + file.filename;
+
+        const res = await fetch(pathToContent)
+        const html = await res.text()
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = html;
+        const title = tempDiv.querySelector('.content-title')?.textContent.trim() || t.noTitle;
+        const mainText = tempDiv.querySelector('.content-text') || (() => {
+            const fallback = document.createElement('div');
+            fallback.innerHTML = t.noIntro;
+            return fallback;
+        })();
+        const introLength = settings.introLength[lang] ?? settings.introLength['ja'];
+        const intro = extractHtmlSnippet(
+            mainText,
+            introLength,
+            ` <a href="${contentTypeS}/${file.filename}" class="read-more-link">......${t.readMore}</a>`
+        );
+
+        const summary = template
+            .replace(/{{title}}/g, title)
+            .replace(/{{intro}}/g, intro)
+            .replace(/{{link}}/g, pathToContent);
+
+        const summaryDiv = document.createElement('div');
+        summaryDiv.innerHTML = summary;
+        contentsList.appendChild(summaryDiv);
+    })
+    return Promise.all(renderPromises);
+}
+
+export async function loadContentsList(pluralize, env) {
+    const settings = env.settings
+    try {
+        const contentTypes = Object.keys(settings.contentTypes);
+
+        await Promise.all(
+        contentTypes.map(contentType => loadContents(contentType, pluralize, env))
+        );
+
+        //typesetなくてもいけないかは要検証
+        if (window.MathJax) {
+            await MathJax.typesetPromise();
+        }
+    } catch (err) {
+        console.error(`loadContentsList error:`, err);
     }
 }

@@ -1,5 +1,5 @@
 #初期設定
-    - /index.html
+    * /index.html
         rootにアクセスしたときに表示するリダイレクト先を記述．
 
 #scriptの読み込み
