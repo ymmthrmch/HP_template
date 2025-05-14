@@ -8,17 +8,20 @@
         "scriptName": {
             "url": "path/to/script",
             "defer": "bool whether add defer or not",
-            "loadToAllPages": "bool whether load to all pages or not"
+            "loadToAllPages": "bool whether load to all pages or not",
+            "tags": ["tags to write in pages you want to add this script"]
         },
         "MathJax": {
             "url": "https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js",
             "defer": true,
-            "loadToAllPages": false
+            "loadToAllPages": false,
+            "tags": []
         },
         "pluralize": {
             "url": "https://cdn.jsdelivr.net/npm/pluralize@8.0.0/pluralize.min.js",
             "defer": true,
-            "loadToAllPages": false
+            "loadToAllPages": false,
+            "tags": ["contents-list"]
         }
     },
     "sns": {
