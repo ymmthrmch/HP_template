@@ -1,8 +1,9 @@
 {
+    "langs": ["ja","en"],
     "scripts": {
         "scriptName": {
             "url": "path/to/script",
-            "defer": "bool whether defer or not",
+            "defer": "bool whether add defer or not",
             "loadToAllPages": "bool whether load to all pages or not"
         },
         "MathJax": {
@@ -11,7 +12,6 @@
             "loadToAllPages": false
         }
     },
-    "langs": ["ja","en"],
     "sns": {
         "name": {
             "icon": "path/to/icon/image",

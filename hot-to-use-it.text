@@ -1,3 +1,7 @@
+#初期設定
+    - /index.html
+        rootにアクセスしたときに表示するリダイレクト先を記述．
+
 #scriptの読み込み
     * /data/settings.json.scriptsに書き込むことで，htmlで簡単に呼び出せる．
     * 全てのページでscriptを読み込みたいときはloadToAllPagesをtrueにする．
