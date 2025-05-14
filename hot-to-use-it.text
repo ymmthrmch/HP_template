@@ -1,0 +1,9 @@
+#scriptの読み込み
+    * /data/settings.json.scriptsに書き込むことで，htmlで簡単に呼び出せる．
+    * 全てのページでscriptを読み込みたいときはloadToAllPagesをtrueにする．
+    * 個別に読み込む時はbodyのdata-scr属性にscriptNameを小文字,空白区切りで記述する．
+
+#変数
+    * htmlのテキストや属性に{{variable}}と記述することで，変数variableを記入できる．
+    * 変数はsettingsの中の項目をドット記法で参照できる．
+    * {{lang}}だけは予約されていてurl先頭にある言語を参照できる．

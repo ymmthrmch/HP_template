@@ -1,6 +1,6 @@
 import {
     applyInterpolateToDOM,
-    importExternalScript
+    importScript
 } from './utils.js';
 
 let settings = {};
@@ -29,10 +29,14 @@ async function readPage() {
 }
 
 async function addToHead () {
-    // const promises = settings.externalScripts.map(
-    //     scr => importExternalScript(scr.key[0], scr.key[1])
-    // );
-    // await Promise.all(promises)
+  const scrlist = document.body.dataset.scr || "";
+  const promises = Object.entries(settings.scripts)
+    .filter(([key, scr]) =>
+      scr.loadToAllPages === true ||
+      scrlist.includes(key.toLowerCase())
+    )
+    .map(([key, scr]) => importScript(scr.url, scr.defer));
+  await Promise.all(promises);
 }
 
 async function loadHeader() {
@@ -49,13 +53,12 @@ async function loadFooter() {
 
 async function afterLoadDOM() {
     // 変数の置き換え
-    applyInterpolateToDOM(document,settings)
+    applyInterpolateToDOM(document,settings,lang)
 
     // 文字の装飾
 
     // MathJaxのtypeset
-    await Promise.all(promises)
-    if (document.body.dataset.useMathjax === 'true') {
+    if ((document.body.dataset.scr || "").includes('mathjax')) {
         if (window.MathJax) {
         await MathJax.typesetPromise();
         }

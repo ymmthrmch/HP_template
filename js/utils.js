@@ -1,4 +1,4 @@
-export function importExternalScript(url, deferFlag = true) {
+export function importScript(url, deferFlag = true) {
   return new Promise((resolve, reject) => {
     if (document.querySelector(`script[src = "${url}"]`)){
     resolve();
@@ -13,10 +13,16 @@ export function importExternalScript(url, deferFlag = true) {
   });
 }
 
-export function applyInterpolateToDOM (root, context){
-    function interpolate (template, context) {
+export function applyInterpolateToDOM(root, context, lang) {
+    function interpolate(template) {
         return template.replace(/{{(.*?)}}/g, (_, key) => {
-            const path = key.trim().split('.');
+            const trimmedKey = key.trim();
+
+            if (trimmedKey === "lang") {
+                return lang ?? '???';
+            }
+
+            const path = trimmedKey.split('.');
             let val = context;
             for (const prop of path) {
                 if (val && typeof val === 'object' && prop in val) {
@@ -31,14 +37,14 @@ export function applyInterpolateToDOM (root, context){
 
     for (const node of root.childNodes) {
         if (node.nodeType === Node.TEXT_NODE) {
-            node.textContent = interpolate(node.textContent, context);
+            node.textContent = interpolate(node.textContent);
         }
         if (node.nodeType === Node.ELEMENT_NODE) {
             for (const attr of node.attributes) {
-                attr.value = interpolate(attr.value, context);
+                attr.value = interpolate(attr.value);
             }
 
-            applyInterpolateToDOM(node, context);
+            applyInterpolateToDOM(node, context, lang);
         }
     }
 }
