@@ -3,6 +3,17 @@ HOW TO USE IT
 last editted: 2025-05-16
 editted by: Harumichi Yamamoto
 
+このファイル内でも{{variable}}で変数を表す．詳しくは#html内の変数を参照．
+
+#設計思想
+    基本的に
+        基本的な変更 -> /data/settings.json（テーマカラー,snsリンクなどなど）
+        外観の複雑な変更 -> /css/style.css
+        内部機構の変更 -> /js/main.js,utils.js
+        htmlファイルの追加,編集 -> /{{lang}}, /includes
+    と，jsでhtmlやcssの記述をすることがないように，編集したいときどこを見ればいいかわかりやすいようにした．
+    また変更が想定される基本的なものはsettings.jsonの編集（と悔しながらupdate.pyの実行）によってできるようにした．
+
 #初期設定
     * /index.html
         rootにアクセスしたときに表示するリダイレクト先を記述．デフォルトは/ja/index.html．
@@ -20,11 +31,6 @@ editted by: Harumichi Yamamoto
     * 変数はsettingsの中の項目をドット記法で参照する．
     * {{lang}}だけは予約されていてurl先頭にある言語を参照する．
 
-#テキストの装飾
-    * 一部の文字のみへの文字装飾
-        - first-letter,initialsというclass属性に付与されるcssがその装飾をコントロールしている．
-        - これらはmain.jsのafterLoadDOM内で実行される関数で特定のclass属性を持つ要素のclass属性に追加される．
-
 #headの変更
     * 一括変更はincludes/head.pyを変更してupdate.pyを実行することでできる．（head.htmlを書き換えただけでは変更されない！）
     * update.pyはhtmlファイル内のキー
@@ -35,6 +41,11 @@ editted by: Harumichi Yamamoto
         <path to a template file>: ここで指定したファイルに置き換わる．/includes/head.htmlを指定．
         <path to a target directory>: ここで指定したディレクトリ内のhtmlに変更が反映される．
         <key>: 置き換えのためのキー．headを指定する．
+
+#テキストの装飾
+    * 一部の文字のみへの文字装飾
+        - first-letter,initialsというclass属性に付与されるcssがその装飾をコントロールしている．
+        - これらはmain.jsのafterLoadDOM内で実行される関数で特定のclass属性を持つ要素のclass属性に追加される．
 
 #各要素などの管理状況
     * <head>
