@@ -198,3 +198,83 @@ export function setupLanguageSwitcher(targetLang) {
         location.pathname = newPath;
     }));
 }
+
+export function wrapFirstLetter(targetTag, classToAdd) {
+    const targets = document.querySelectorAll(targetTag);
+    function findFirstTextNode(node) {
+        for (let child of node.childNodes) {
+            if (child.nodeType === Node.TEXT_NODE && child.textContent.trim().length > 0) {
+                return child;
+            } else if (child.nodeType === Node.ELEMENT_NODE) {
+                const result = findFirstTextNode(child);
+                if (result) return result;
+            }
+        }
+        return null;
+    }
+    targets.forEach(target => {
+        if (target.querySelector(classToAdd)) return;
+
+        const textNode = findFirstTextNode(target);
+        if (!textNode) return;
+
+        const text = textNode.textContent.trim();
+        if (!text || text.length === 0) return;
+
+        const firstLetter = text.charAt(0);
+        const rest = text.slice(1);
+
+        const span = document.createElement('span');
+        span.className = classToAdd;
+        span.textContent = firstLetter;
+
+        const restText = document.createTextNode(rest);
+
+        const parent = textNode.parentNode;
+        parent.insertBefore(span, textNode);
+        parent.insertBefore(restText, textNode);
+        parent.removeChild(textNode);
+    });
+}
+
+export function wrapInitials(targetTag, classToAdd) {
+    const targets = document.querySelectorAll(targetTag);
+
+    targets.forEach(el => {
+        if (el.querySelector(classToAdd)) return;
+
+        const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, {
+            acceptNode: node => {
+            if (node.textContent.trim()) return NodeFilter.FILTER_ACCEPT;
+            return NodeFilter.FILTER_REJECT;
+            }
+        });
+
+        const textNodes = [];
+        while (walker.nextNode()) {
+            textNodes.push(walker.currentNode);
+        }
+
+        textNodes.forEach(textNode => {
+            const parts = textNode.textContent.split(/([ \-･]+)/);
+
+            const fragment = document.createDocumentFragment();
+
+            parts.forEach(part => {
+                if (part.match(/([ \-･]+)/)) {
+                    fragment.appendChild(document.createTextNode(part));
+                } else if (part.length > 0) {
+                    const span = document.createElement('span');
+                    span.className = classToAdd;
+                    span.textContent = part.charAt(0);
+                    fragment.appendChild(span);
+                    if (part.length > 1) {
+                        fragment.appendChild(document.createTextNode(part.slice(1)));
+                    }
+                }
+            });
+
+            textNode.parentNode.replaceChild(fragment, textNode);
+        });
+    });
+}
