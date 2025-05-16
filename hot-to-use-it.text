@@ -3,12 +3,19 @@
         rootにアクセスしたときに表示するリダイレクト先を記述．
 
 #scriptの読み込み
-    * /data/settings.json.scriptsに書き込むことで，htmlで簡単に呼び出せる．
-    * 全てのページでscriptを読み込みたいときはloadToAllPagesをtrueにする．
-    * tagsに記述したtagをbodyのdata-scr属性に空白区切りで記述すると読み込まれる．
-    * bodyのdata-scr属性にscriptNameを小文字,空白区切りで記述しても読み込まれる．
+    * 基本的には各ページでheadに記述して読み込む．
+    * よく使う項目はbodyにdata-src属性として追加することで読み込める．
+        - /data/settings.json.scriptsに使用したいscriptを追加する．
+        - 全てのページでscriptを読み込みたいときはloadToAllPagesをtrueにする．
+        - tagsに記述したtagをbodyのdata-scr属性に空白区切りで記述すると読み込まれる．
+        - bodyのdata-scr属性にscriptNameを小文字,空白区切りで記述しても読み込まれる．
 
-#変数
-    * htmlのテキストや属性に{{variable}}と記述することで，変数variableを記入できる．
+#html内の変数
+    * htmlのテキストや属性に変数名を{{と}}で囲ったものを記述することで，変数を使用できる．
     * 変数はsettingsの中の項目をドット記法で参照できる．
     * {{lang}}だけは予約されていてurl先頭にある言語を参照できる．
+
+#テキストの装飾
+    * 一部の文字のみへの文字装飾
+        - first-letter,initialsというclass属性に付与されるcssがその装飾をコントロールしている．
+        - これらはmain.jsのafterLoadDOM内で実行される関数で特定のclass属性を持つ要素のclass属性に追加される．
