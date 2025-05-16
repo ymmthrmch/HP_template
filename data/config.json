@@ -1,0 +1,37 @@
+{
+    "colors": {
+        "themeDarkColor": "rgb(14, 40, 143)"
+    },
+    "contentTypes": {
+        "example": {"ja":"例","en":"examples"}
+    },
+    "introLength": {"ja":150,"en":200},
+    "langs": ["ja","en"],
+    "scripts": {
+        "scriptName": {
+            "url": "path/to/script",
+            "defer": "bool whether add defer or not",
+            "loadToAllPages": "bool whether load to all pages or not",
+            "tags": ["tags to write in pages you want to add this script"]
+        },
+        "MathJax": {
+            "url": "https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js",
+            "defer": true,
+            "loadToAllPages": false,
+            "tags": []
+        },
+        "pluralize": {
+            "url": "https://cdn.jsdelivr.net/npm/pluralize@8.0.0/pluralize.min.js",
+            "defer": true,
+            "loadToAllPages": false,
+            "tags": ["contents-list"]
+        }
+    },
+    "themeIcon": "path/to/icon/image",
+    "sns": {
+        "name": {
+            "icon": "path/to/icon/image",
+            "url": "url/to/your/account"
+        }
+    }
+}

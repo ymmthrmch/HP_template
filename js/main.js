@@ -7,11 +7,12 @@ import {
     wrapInitials
 } from './utils.js';
 
+let config = {};
 let settings = {};
 let lang = 'ja';
 let t = {};
 let env = {
-    "settings": settings,
+    "config": config,
     "lang": lang,
     "t": t
 }
@@ -19,13 +20,13 @@ let env = {
 main();
 
 async function main() {
-  await beforeLoadingDOM();
+  await initAppData();
   await loadDOM();
   await afterLoadingDOM();
 }
 
-async function beforeLoadingDOM() {
-    await loadSettingsAndTranslations();
+async function initAppData() {
+    await loadAppData();
     applyTheme();
 }
 
@@ -43,8 +44,8 @@ async function afterLoadingDOM() {
     applyInterpolateToDOM(document, env);
 
     // 文字の装飾
-    wrapFirstLetter('.content-title','first-letter');
-    wrapInitials('title','initials');
+    wrapFirstLetter('h2','first-letter');
+    wrapInitials('h1','initials');
 
     //言語切り替え
     setupLanguageSwitcher();
@@ -58,28 +59,29 @@ async function afterLoadingDOM() {
 }
 
 // in beforeLoadDOM
-async function loadSettingsAndTranslations() {
+async function loadAppData() {
     lang = location.pathname.split('/')[1];
-    [settings, t] = await Promise.all([
+    [config, settings, t] = await Promise.all([
+        fetch('/data/config.json').then(res => res.json()),
         fetch('/data/settings.json').then(res => res.json()),
         fetch(`/locales/${lang}.json`).then(res => res.json()),
     ]);
+    env.config = config;
     env.settings = settings;
     env.lang = lang;
     env.t = t;
-    console.log('loaded Settings and Translations')
 }
 
 function applyTheme() {
   const root = document.documentElement;
-  root.style.setProperty('--theme-dark', settings.colors.themeDarkColor);
+  root.style.setProperty('--theme-dark', config.colors.themeDarkColor);
 }
 
 // in loadDOM
 async function addToHead () {
     const scrlistRaw = document.body.dataset.scr || "";
     const scrlist = scrlistRaw.split(/\s+/).map(tag => tag.toLowerCase()); // タグを配列に
-    const promises = Object.entries(settings.scripts)
+    const promises = Object.entries(config.scripts)
         .filter(([key, scr]) => {
             if (scr.loadToAllPages === true) return true;
             if (!Array.isArray(scr.tags)) return false;
@@ -94,23 +96,14 @@ async function loadHeader() {
     if (document.querySelector('header')) return;
     const res = await fetch('/includes/header.html');
     const html = await res.text();
-    const tmp = document.querySelector('header');
+    const tmp = document.createElement('div');
     tmp.innerHTML = html;
-    document.body.appendChild(tmp);
+    document.body.insertBefore(tmp,document.body.firstChild);
 }
 
 async function addToBody() {
-    // 次ここ作る．
     const dataset = document.body.dataset;
     if (dataset.contentsList !== undefined) {
-        if (!window.pluralize) {
-            const pluralizeScript = settings.scripts['pluralize'];
-            if (pluralizeScript) {
-                await importScript(pluralizeScript.url, pluralizeScript.defer);
-            } else {
-                console.warn('pluralize script not found in settings!');
-            }
-        }
         await loadContentsList(window.pluralize, env);
     }
 }
@@ -119,7 +112,7 @@ async function loadFooter() {
     if (document.querySelector('footer')) return;
     const res = await fetch('/includes/footer.html');
     const html = await res.text();
-    const tmp = document.querySelector('footer');
+    const tmp = document.createElement('div');
     tmp.innerHTML = html;
     document.body.appendChild(tmp);
 }

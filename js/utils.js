@@ -91,7 +91,7 @@ export function importScript(url, deferFlag = true) {
 }
 
 export function interpolate(template,env) {
-        const settings = env.settings;
+        const config = env.config;
         const lang = env.lang;
         return template.replace(/{{(.*?)}}/g, (_, key) => {
             const trimmedKey = key.trim();
@@ -101,7 +101,7 @@ export function interpolate(template,env) {
             }
 
             const path = trimmedKey.split('.');
-            let val = settings;
+            let val = config;
             for (const prop of path) {
                 if (val && typeof val === 'object' && prop in val) {
                     val = val[prop];
@@ -118,7 +118,7 @@ async function loadContents(contentType, pluralize, env) {
     const contentsList = document.getElementById(`${contentTypeS}-list`);
     if (!contentsList) return;
 
-    const settings = env.settings
+    const config = env.config
     const lang = env.lang
     const t = env.t
     const listRes = await fetch(`/data/contents_list/${contentTypeS}.json`)
@@ -127,7 +127,7 @@ async function loadContents(contentType, pluralize, env) {
         const noContentsMessage = document.createElement('div');
         noContentsMessage.className = 'content no-contents-message';
         noContentsMessage.textContent = t.noContents.replace(
-            "{{contentType}}",settings.contentTypes[contentType][lang]
+            "{{contentType}}",config.contentTypes[contentType][lang]
         ) ?? 'No contents here.';
         contentsList.appendChild(noContentsMessage);
         return;
@@ -152,7 +152,7 @@ async function loadContents(contentType, pluralize, env) {
             fallback.innerHTML = t.noIntro;
             return fallback;
         })();
-        const introLength = settings.introLength[lang] ?? settings.introLength['ja'];
+        const introLength = config.introLength[lang] ?? config.introLength['ja'];
         const intro = extractHtmlSnippet(
             mainText,
             introLength,
@@ -172,9 +172,9 @@ async function loadContents(contentType, pluralize, env) {
 }
 
 export async function loadContentsList(pluralize, env) {
-    const settings = env.settings
+    const config = env.config
     try {
-        const contentTypes = Object.keys(settings.contentTypes);
+        const contentTypes = Object.keys(config.contentTypes);
 
         await Promise.all(
         contentTypes.map(contentType => loadContents(contentType, pluralize, env))
@@ -190,8 +190,8 @@ export async function loadContentsList(pluralize, env) {
 }
 
 export function setupLanguageSwitcher(targetLang) {
-    const button = querySelectAll('#language-switcher button')
-    button.forEach(btn => btn.addEventListener('click', () => {
+    const buttons = document.querySelectorAll('#language-switcher button')
+    buttons.forEach(btn => btn.addEventListener('click', () => {
         const currentPath = location.pathname;
         const currentLang = currentPath.split('/')[1];
         const newPath = currentPath.replace(`${currentLang}`,`${targetLang}`);

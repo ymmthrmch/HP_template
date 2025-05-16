@@ -3,59 +3,61 @@ HOW TO USE IT
 last editted: 2025-05-16
 editted by: Harumichi Yamamoto
 
-このファイル内でも{{variable}}で変数を表す．詳しくは#html内の変数を参照．
+このファイル内でも{{kamo}}で変数を表す．詳しくは#html内の変数を参照．
 
-#設計思想
-    基本的に
-        基本的な変更 -> /data/settings.json（テーマカラー,snsリンクなどなど）
+設計思想
+    基本的に変更が想定されるものはconfig.jsonの編集（と悔しながらupdate.pyの実行）によってできるようにした．
+    また
+        基本的な変更 -> /data/config.json（テーマカラー,snsリンクなど）
         外観の複雑な変更 -> /css/style.css
         内部機構の変更 -> /js/main.js,utils.js
         htmlファイルの追加,編集 -> /{{lang}}, /includes
     と，jsでhtmlやcssの記述をすることがないように，編集したいときどこを見ればいいかわかりやすいようにした．
-    また変更が想定される基本的なものはsettings.jsonの編集（と悔しながらupdate.pyの実行）によってできるようにした．
 
-#初期設定
-    * /index.html
+初期設定
+    #/index.html
         rootにアクセスしたときに表示するリダイレクト先を記述．デフォルトは/ja/index.html．
 
-#scriptの読み込み
-    * 基本的には各ページでheadに記述して読み込む．
-    * よく使う項目はbodyにdata-src属性として追加することで読み込める．
-        - /data/settings.json.scriptsに使用したいscriptを追加する．
-        - 全てのページでscriptを読み込みたいときはloadToAllPagesをtrueにする．
-        - tagsに記述したtagをbodyのdata-scr属性に空白区切りで記述すると読み込まれる．
-        - bodyのdata-scr属性にscriptNameを小文字,空白区切りで記述しても読み込まれる．
+htmlについて
+    #scriptの読み込み
+        * 基本的には各ページでheadに記述して読み込む．
+        * よく使う項目はbodyにdata-src属性として追加することで読み込める．
+            - /data/config.json.scriptsに使用したいscriptを追加する．
+            - 全てのページでscriptを読み込みたいときはloadToAllPagesをtrueにする．
+            - tagsに記述したtagをbodyのdata-scr属性に空白区切りで記述すると読み込まれる．
+            - bodyのdata-scr属性にscriptNameを小文字,空白区切りで記述しても読み込まれる．
 
-#html内の変数
-    * htmlのテキストや属性に変数名を{{と}}で囲ったものを記述することで，変数を使用できる．
-    * 変数はsettingsの中の項目をドット記法で参照する．
-    * {{lang}}だけは予約されていてurl先頭にある言語を参照する．
+    #html内の変数
+        * htmlのテキストや属性に変数名を{{と}}で囲ったものを記述することで，変数を使用できる．
+        * 変数はconfigの中の項目をドット記法で参照する．
+        * {{lang}}だけは予約されていてurl先頭にある言語を参照する．
 
-#headの変更
-    * 一括変更はincludes/head.pyを変更してupdate.pyを実行することでできる．（head.htmlを書き換えただけでは変更されない！）
-    * update.pyはhtmlファイル内のキー
-        <!-- KEY:nanchara -->
-        <!-- ENDKEY -->
-    で囲まれた部分(nancharaは変数)を指定されたテンプレートファイルの中身と置き換える．
-    * update.pyは以下の三つを引数にとる．
-        <path to a template file>: ここで指定したファイルに置き換わる．/includes/head.htmlを指定．
-        <path to a target directory>: ここで指定したディレクトリ内のhtmlに変更が反映される．
-        <key>: 置き換えのためのキー．headを指定する．
+    #headの変更
+        * main.jsの読み込み，SOE系のmetaタグは各htmlに書き込む．
+        * 一括変更はincludes/head.pyを変更してupdate.pyを実行することでできる．（head.htmlを書き換えただけでは変更されない！）
+        * update.pyはhtmlファイル内のキー
+            <!-- KEY:kamo -->
+            <!-- ENDKEY -->
+        で囲まれた部分(kamoは変数)を指定されたテンプレートファイルの中身と置き換える．
+        * update.pyは以下の三つを引数にとる．
+            <path to a template file>: ここで指定したファイルに置き換わる．/includes/head.htmlを指定．
+            <path to a target directory>: ここで指定したディレクトリ内のhtmlに変更が反映される．
+            <key>: 置き換えのためのキー．headを指定する．
 
-#テキストの装飾
-    * 一部の文字のみへの文字装飾
-        - first-letter,initialsというclass属性に付与されるcssがその装飾をコントロールしている．
-        - これらはmain.jsのafterLoadDOM内で実行される関数で特定のclass属性を持つ要素のclass属性に追加される．
+    #テキストの装飾
+        * 一部の文字のみへの文字装飾
+            - first-letter,initialsというclass属性に付与されるcssがその装飾をコントロールしている．
+            - これらはmain.jsのafterLoadDOM内で実行される関数で特定のclass属性を持つ要素のclass属性に追加される．
 
-#各要素などの管理状況
-    * <head>
-        - 基本，main.jsのaddToHeadを通じて制御している．
-        - jsが読み込まれる前に必要なmetaタグなどは/includes/head.htmlをupdate.pyで手動でhtmlに反映．
-    * script
-        - 外部スクリプトを/data/settings.json.scriptsに設定し，htmlのbpdyにclass属性で付与をコントロール．
-    * <header>
-        - 基本/includes/header.htmlをmain.jsのloadHeaderで挿入している．
-        - htmlファイルには書いた場合，そちらが優先される．
-    * <footer>
-        - /includes/footer.htmlをmain.jsのloadFooterで挿入している．
-        - htmlファイルには書いた場合，そちらが優先される．
+    #各要素などの管理状況
+        * <head>
+            - 基本，main.jsのaddToHeadを通じて制御している．
+            - jsが読み込まれる前に必要なmetaタグなどは/includes/head.htmlをupdate.pyで手動でhtmlに反映．
+        * script
+            - 外部スクリプトを/data/config.json.scriptsに設定し，htmlのbpdyにclass属性で付与をコントロール．
+        * <header>
+            - 基本/includes/header.htmlをmain.jsのloadHeaderで挿入している．
+            - htmlファイルには書いた場合，そちらが優先される．
+        * <footer>
+            - /includes/footer.htmlをmain.jsのloadFooterで挿入している．
+            - htmlファイルには書いた場合，そちらが優先される．
