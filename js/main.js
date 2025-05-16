@@ -3,6 +3,8 @@ import {
     importScript,
     loadContentsList,
     setupLanguageSwitcher,
+    wrapFirstLetter,
+    wrapInitials
 } from './utils.js';
 
 let settings = {};
@@ -12,10 +14,50 @@ let env = {
     "settings": settings,
     "lang": lang,
     "t": t
+}
+
+main();
+
+async function main() {
+  await beforeLoadingDOM();
+  await loadDOM();
+  await afterLoadingDOM();
+}
+
+async function beforeLoadingDOM() {
+    await loadSettingsAndTranslations();
+    applyTheme();
+}
+
+async function loadDOM() {
+    await addToHead();
+    await Promise.all([
+        loadHeader(),
+        addToBody(),
+        loadFooter(),
+    ])
+}
+
+async function afterLoadingDOM() {
+    // 変数の置き換え
+    applyInterpolateToDOM(document, env);
+
+    // 文字の装飾
+    wrapFirstLetter('.content-title','first-letter');
+    wrapInitials('title','initials');
+
+    //言語切り替え
+    setupLanguageSwitcher();
+
+    // MathJaxのtypeset
+    if ((document.body.dataset.scr || "").includes('mathjax')) {
+        if (window.MathJax) {
+        await MathJax.typesetPromise();
+        }
     }
+}
 
-loadSettingsAndTranslations().then(() => readPage())
-
+// in beforeLoadDOM
 async function loadSettingsAndTranslations() {
     lang = location.pathname.split('/')[1];
     [settings, t] = await Promise.all([
@@ -28,16 +70,12 @@ async function loadSettingsAndTranslations() {
     console.log('loaded Settings and Translations')
 }
 
-async function readPage() {
-    await addToHead();
-    await Promise.all([
-        loadHeader(),
-        addToBody(),
-        loadFooter(),
-    ])
-    afterLoadDOM();
+function applyTheme() {
+  const root = document.documentElement;
+  root.style.setProperty('--theme-dark', settings.colors.themeDarkColor);
 }
 
+// in loadDOM
 async function addToHead () {
     const scrlistRaw = document.body.dataset.scr || "";
     const scrlist = scrlistRaw.split(/\s+/).map(tag => tag.toLowerCase()); // タグを配列に
@@ -82,21 +120,4 @@ async function loadFooter() {
     const footer = document.createElement('footer');
     footer.innerHTML = html;
     document.body.appendChild(footer);
-}
-
-async function afterLoadDOM() {
-    // 変数の置き換え
-    applyInterpolateToDOM(document, env);
-
-    // 文字の装飾
-
-    //言語切り替え
-    setupLanguageSwitcher();
-
-    // MathJaxのtypeset
-    if ((document.body.dataset.scr || "").includes('mathjax')) {
-        if (window.MathJax) {
-        await MathJax.typesetPromise();
-        }
-    }
 }
