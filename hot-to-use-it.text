@@ -14,12 +14,11 @@ editted by: Harumichi Yamamoto
         - 全てのページでscriptを読み込みたいときはloadToAllPagesをtrueにする．
         - tagsに記述したtagをbodyのdata-scr属性に空白区切りで記述すると読み込まれる．
         - bodyのdata-scr属性にscriptNameを小文字,空白区切りで記述しても読み込まれる．
-    * 全てのページでの読み込みはheadのテンプレートを変更することでもできる．詳しくは#headの変更を参照．
 
 #html内の変数
     * htmlのテキストや属性に変数名を{{と}}で囲ったものを記述することで，変数を使用できる．
-    * 変数はsettingsの中の項目をドット記法で参照できる．
-    * {{lang}}だけは予約されていてurl先頭にある言語を参照できる．
+    * 変数はsettingsの中の項目をドット記法で参照する．
+    * {{lang}}だけは予約されていてurl先頭にある言語を参照する．
 
 #テキストの装飾
     * 一部の文字のみへの文字装飾
@@ -27,12 +26,25 @@ editted by: Harumichi Yamamoto
         - これらはmain.jsのafterLoadDOM内で実行される関数で特定のclass属性を持つ要素のclass属性に追加される．
 
 #headの変更
-    * 一括変更はincludes/head.pyを変更してupdate.pyを実行することでできる．
+    * 一括変更はincludes/head.pyを変更してupdate.pyを実行することでできる．（head.htmlを書き換えただけでは変更されない！）
     * update.pyはhtmlファイル内のキー
         <!-- KEY:nanchara -->
         <!-- ENDKEY -->
     で囲まれた部分(nancharaは変数)を指定されたテンプレートファイルの中身と置き換える．
     * update.pyは以下の三つを引数にとる．
-        - <path to a template file>: ここで指定したファイルに置き換わる．/includes/head.htmlを指定．
-        - <path to a target directory>: ここで指定したディレクトリ内のhtmlに変更が反映される．
-        - <key>: 置き換えのためのキー．headを指定する．
+        <path to a template file>: ここで指定したファイルに置き換わる．/includes/head.htmlを指定．
+        <path to a target directory>: ここで指定したディレクトリ内のhtmlに変更が反映される．
+        <key>: 置き換えのためのキー．headを指定する．
+
+#各要素などの管理状況
+    * <head>
+        - 基本，main.jsのaddToHeadを通じて制御している．
+        - jsが読み込まれる前に必要なmetaタグなどは/includes/head.htmlをupdate.pyで手動でhtmlに反映．
+    * script
+        - 外部スクリプトを/data/settings.json.scriptsに設定し，htmlのbpdyにclass属性で付与をコントロール．
+    * <header>
+        - 基本/includes/header.htmlをmain.jsのloadHeaderで挿入している．
+        - htmlファイルには書いた場合，そちらが優先される．
+    * <footer>
+        - /includes/footer.htmlをmain.jsのloadFooterで挿入している．
+        - htmlファイルには書いた場合，そちらが優先される．

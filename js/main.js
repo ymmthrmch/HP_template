@@ -91,9 +91,10 @@ async function addToHead () {
 }
 
 async function loadHeader() {
+    if (document.querySelector('header')) return;
     const res = await fetch('/includes/header.html');
     const html = await res.text();
-    const tmp = document.createElement('div');
+    const tmp = document.querySelector('header');
     tmp.innerHTML = html;
     document.body.appendChild(tmp);
 }
@@ -115,9 +116,10 @@ async function addToBody() {
 }
 
 async function loadFooter() {
+    if (document.querySelector('footer')) return;
     const res = await fetch('/includes/footer.html');
     const html = await res.text();
-    const tmp = document.createElement('div');
+    const tmp = document.querySelector('footer');
     tmp.innerHTML = html;
     document.body.appendChild(tmp);
 }
