@@ -1,6 +1,11 @@
+HOW TO USE IT
+
+last editted: 2025-05-16
+editted by: Harumichi Yamamoto
+
 #初期設定
     * /index.html
-        rootにアクセスしたときに表示するリダイレクト先を記述．
+        rootにアクセスしたときに表示するリダイレクト先を記述．デフォルトは/ja/index.html．
 
 #scriptの読み込み
     * 基本的には各ページでheadに記述して読み込む．
@@ -9,6 +14,7 @@
         - 全てのページでscriptを読み込みたいときはloadToAllPagesをtrueにする．
         - tagsに記述したtagをbodyのdata-scr属性に空白区切りで記述すると読み込まれる．
         - bodyのdata-scr属性にscriptNameを小文字,空白区切りで記述しても読み込まれる．
+    * 全てのページでの読み込みはheadのテンプレートを変更することでもできる．詳しくは#headの変更を参照．
 
 #html内の変数
     * htmlのテキストや属性に変数名を{{と}}で囲ったものを記述することで，変数を使用できる．
@@ -19,3 +25,14 @@
     * 一部の文字のみへの文字装飾
         - first-letter,initialsというclass属性に付与されるcssがその装飾をコントロールしている．
         - これらはmain.jsのafterLoadDOM内で実行される関数で特定のclass属性を持つ要素のclass属性に追加される．
+
+#headの変更
+    * 一括変更はincludes/head.pyを変更してupdate.pyを実行することでできる．
+    * update.pyはhtmlファイル内のキー
+        <!-- KEY:nanchara -->
+        <!-- ENDKEY -->
+    で囲まれた部分(nancharaは変数)を指定されたテンプレートファイルの中身と置き換える．
+    * update.pyは以下の三つを引数にとる．
+        - <path to a template file>: ここで指定したファイルに置き換わる．/includes/head.htmlを指定．
+        - <path to a target directory>: ここで指定したディレクトリ内のhtmlに変更が反映される．
+        - <key>: 置き換えのためのキー．headを指定する．

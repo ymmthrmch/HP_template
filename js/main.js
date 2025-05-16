@@ -93,9 +93,9 @@ async function addToHead () {
 async function loadHeader() {
     const res = await fetch('/includes/header.html');
     const html = await res.text();
-    const header = document.createElement('header');
-    header.innerHTML = html;
-    document.body.appendChild(header);
+    const tmp = document.createElement('div');
+    tmp.innerHTML = html;
+    document.body.appendChild(tmp);
 }
 
 async function addToBody() {
@@ -117,7 +117,7 @@ async function addToBody() {
 async function loadFooter() {
     const res = await fetch('/includes/footer.html');
     const html = await res.text();
-    const footer = document.createElement('footer');
-    footer.innerHTML = html;
-    document.body.appendChild(footer);
+    const tmp = document.createElement('div');
+    tmp.innerHTML = html;
+    document.body.appendChild(tmp);
 }
