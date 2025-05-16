@@ -1,41 +1,3 @@
-export function importScript(url, deferFlag = true) {
-  return new Promise((resolve, reject) => {
-    if (document.querySelector(`script[src = "${url}"]`)){
-    resolve();
-    return;
-    }
-    const script = document.createElement('script');
-    script.src = url;
-    script.defer = deferFlag;
-    script.onload = () => resolve();
-    script.onerror = () => reject(new Error(`Failed to load script: ${url}`));
-    document.head.appendChild(script);
-  });
-}
-
-export function interpolate(template,env) {
-        const settings = env.settings;
-        const lang = env.lang;
-        return template.replace(/{{(.*?)}}/g, (_, key) => {
-            const trimmedKey = key.trim();
-
-            if (trimmedKey === "lang") {
-                return lang ?? '???';
-            }
-
-            const path = trimmedKey.split('.');
-            let val = settings;
-            for (const prop of path) {
-                if (val && typeof val === 'object' && prop in val) {
-                    val = val[prop];
-                } else {
-                    return '???';
-                }
-            }
-            return val;
-        });
-    }
-
 export function applyInterpolateToDOM(root, env) {
     for (const node of root.childNodes) {
         if (node.nodeType === Node.TEXT_NODE) {
@@ -111,6 +73,44 @@ function extractHtmlSnippet(domNode, limit = 100, suffix = '') {
     }
 
     return wrapper.outerHTML;
+}
+
+export function importScript(url, deferFlag = true) {
+  return new Promise((resolve, reject) => {
+    if (document.querySelector(`script[src = "${url}"]`)){
+    resolve();
+    return;
+    }
+    const script = document.createElement('script');
+    script.src = url;
+    script.defer = deferFlag;
+    script.onload = () => resolve();
+    script.onerror = () => reject(new Error(`Failed to load script: ${url}`));
+    document.head.appendChild(script);
+  });
+}
+
+export function interpolate(template,env) {
+        const settings = env.settings;
+        const lang = env.lang;
+        return template.replace(/{{(.*?)}}/g, (_, key) => {
+            const trimmedKey = key.trim();
+
+            if (trimmedKey === "lang") {
+                return lang ?? '???';
+            }
+
+            const path = trimmedKey.split('.');
+            let val = settings;
+            for (const prop of path) {
+                if (val && typeof val === 'object' && prop in val) {
+                    val = val[prop];
+                } else {
+                    return '???';
+                }
+            }
+            return val;
+        });
 }
 
 async function loadContents(contentType, pluralize, env) {

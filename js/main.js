@@ -13,6 +13,8 @@ let env = {
     "t": t
     }
 
+loadSettingsAndTranslations().then(() => readPage())
+
 async function loadSettingsAndTranslations() {
     lang = location.pathname.split('/')[1];
     [settings, t] = await Promise.all([
@@ -22,10 +24,8 @@ async function loadSettingsAndTranslations() {
     env.settings = settings;
     env.lang = lang;
     env.t = t;
+    console.log('loaded Settings and Translations')
 }
-
-loadSettingsAndTranslations()
-    .then(() => readPage())
 
 async function readPage() {
     await addToHead();
@@ -85,9 +85,12 @@ async function loadFooter() {
 
 async function afterLoadDOM() {
     // 変数の置き換え
-    applyInterpolateToDOM(document, env)
+    applyInterpolateToDOM(document, env);
 
     // 文字の装飾
+
+    //言語切り替え
+    setupLanguageSwitcher();
 
     // MathJaxのtypeset
     if ((document.body.dataset.scr || "").includes('mathjax')) {
@@ -95,4 +98,14 @@ async function afterLoadDOM() {
         await MathJax.typesetPromise();
         }
     }
+}
+
+function setupLanguageSwitcher(targetLang) {
+    const button = querySelectAll('#language-switcher button')
+    button.forEach(btn => btn.addEventListener('click', () => {
+        const currentPath = location.pathname;
+        const currentLang = currentPath.split('/')[1];
+        const newPath = currentPath.replace(`${currentLang}`,`${targetLang}`);
+        location.pathname = newPath;
+    }));
 }
