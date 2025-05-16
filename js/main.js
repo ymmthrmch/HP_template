@@ -1,7 +1,8 @@
 import {
     applyInterpolateToDOM,
     importScript,
-    loadContentsList
+    loadContentsList,
+    setupLanguageSwitcher,
 } from './utils.js';
 
 let settings = {};
@@ -98,14 +99,4 @@ async function afterLoadDOM() {
         await MathJax.typesetPromise();
         }
     }
-}
-
-function setupLanguageSwitcher(targetLang) {
-    const button = querySelectAll('#language-switcher button')
-    button.forEach(btn => btn.addEventListener('click', () => {
-        const currentPath = location.pathname;
-        const currentLang = currentPath.split('/')[1];
-        const newPath = currentPath.replace(`${currentLang}`,`${targetLang}`);
-        location.pathname = newPath;
-    }));
 }

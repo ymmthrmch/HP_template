@@ -188,3 +188,13 @@ export async function loadContentsList(pluralize, env) {
         console.error(`loadContentsList error:`, err);
     }
 }
+
+export function setupLanguageSwitcher(targetLang) {
+    const button = querySelectAll('#language-switcher button')
+    button.forEach(btn => btn.addEventListener('click', () => {
+        const currentPath = location.pathname;
+        const currentLang = currentPath.split('/')[1];
+        const newPath = currentPath.replace(`${currentLang}`,`${targetLang}`);
+        location.pathname = newPath;
+    }));
+}
