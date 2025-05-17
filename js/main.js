@@ -73,8 +73,31 @@ async function loadAppData() {
 }
 
 function applyTheme() {
-  const root = document.documentElement;
-  root.style.setProperty('--theme-dark', config.colors.themeDarkColor);
+    const root = document.documentElement;
+    const themeName = config.colors.theme;
+    const themeData = config.colors.colorBook[themeName];
+
+    if (!themeData) {
+        console.warn(`Theme "${themeName}" not found in config.colors.colorBook`);
+        return;
+    }
+
+    const cssVarMap = {
+        '--theme-dark': 'themeDarkColor',
+        '--theme-light': 'themeLightColor',
+        '--theme-tp-dark': 'themeTransparentDarkColor',
+        '--theme-tp-light': 'themeTransparentLightColor',
+        '--theme-text': 'themeTextColor',
+        '--theme-bg': 'themeBackgroundColor',
+        '--theme-tp-bg': 'themeTransparentBackground',
+        '--accent-color': 'accentColor',
+    };
+
+    for (const [cssVar, jsonKey] of Object.entries(cssVarMap)) {
+        if (themeData[jsonKey]) {
+            root.style.setProperty(cssVar, themeData[jsonKey]);
+        }
+    }
 }
 
 // in loadDOM
