@@ -44,14 +44,15 @@ async function afterLoadingDOM() {
     applyInterpolateToDOM(document, env);
 
     // 文字の装飾
-    wrapFirstLetter('h2','first-letter');
+    wrapFirstLetter('h3','first-letter');
     wrapInitials('h1','initials');
+    wrapInitials('h2','initials');
 
     //言語切り替え
     setupLanguageSwitcher();
 
     // MathJaxのtypeset
-    if ((document.body.dataset.scr || "").includes('mathjax')) {
+    if ((document.body.dataset.tags || "").includes('mathjax')) {
         if (window.MathJax) {
         await MathJax.typesetPromise();
         }
@@ -98,20 +99,40 @@ function applyTheme() {
             root.style.setProperty(cssVar, themeData[jsonKey]);
         }
     }
+
+    root.style.setProperty('--icon-image-dark', `url(${themeData.iconImageDark})`);
+    root.style.setProperty('--icon-image-light', `url(${themeData.iconImageLight})`);
 }
 
 // in loadDOM
 async function addToHead () {
-    const scrlistRaw = document.body.dataset.scr || "";
-    const scrlist = scrlistRaw.split(/\s+/).map(tag => tag.toLowerCase()); // タグを配列に
-    const promises = Object.entries(config.scripts)
-        .filter(([key, scr]) => {
-            if (scr.loadToAllPages === true) return true;
-            if (!Array.isArray(scr.tags)) return false;
-            return scr.tags.some(tag => scrlist.includes(tag.toLowerCase()));
-        })
-        .map(([key, scr]) => importScript(scr.url, scr.defer));
-  
+    const scrlistRaw = document.body.dataset.tags || "";
+    const scrlist = scrlistRaw.split(/\s+/).map(tag => tag.toLowerCase());
+
+    const shouldLoadScript = (scr) => {
+        if (scr.loadToAllPages === true) return true;
+        if (!Array.isArray(scr.tags)) return false;
+        return scr.tags.some(tag => {
+        if (tag.includes("__PLACEHOLDER__")) {
+            const pattern = tag.replace("__PLACEHOLDER__", ".*");
+            const regex = new RegExp(`^${pattern}$`, 'i');
+            return scr.tags.some(scrtag => regex.test(scrtag));
+        }
+        return scr.tags.some(tag => scrlist.includes(tag.toLowerCase()));
+        });
+    }
+
+    const getScriptsToImport = (scriptsObj) => {
+        return Object.values(scriptsObj)
+            .filter(shouldLoadScript)
+            .map(scr => importScript(scr.url, scr.defer));
+    };
+
+    const promises = [
+        ...getScriptsToImport(settings.scripts),
+        ...getScriptsToImport(config.scripts)
+    ];
+
     await Promise.all(promises);
 }
 
@@ -125,11 +146,16 @@ async function loadHeader() {
 }
 
 async function addToBody() {
-    const dataset = document.body.dataset;
-    if (dataset.contentsList !== undefined) {
+    try {
+        if (!window.pluralize) {
+            throw new Error("window.pluralize is not available");
+        }
         await loadContentsList(window.pluralize, env);
+    } catch (err) {
+        console.error("addToBody error:", err);
     }
 }
+
 
 async function loadFooter() {
     if (document.querySelector('footer')) return;

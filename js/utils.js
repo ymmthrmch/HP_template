@@ -76,41 +76,52 @@ function extractHtmlSnippet(domNode, limit = 100, suffix = '') {
 }
 
 export function importScript(url, deferFlag = true) {
-  return new Promise((resolve, reject) => {
-    if (document.querySelector(`script[src = "${url}"]`)){
-    resolve();
-    return;
-    }
-    const script = document.createElement('script');
-    script.src = url;
-    script.defer = deferFlag;
-    script.onload = () => resolve();
-    script.onerror = () => reject(new Error(`Failed to load script: ${url}`));
-    document.head.appendChild(script);
-  });
+    return new Promise((resolve, reject) => {
+        if (document.querySelector(`script[src = "${url}"]`)){
+        resolve();
+        return;
+        }
+        const script = document.createElement('script');
+        script.src = url;
+        script.defer = deferFlag;
+        script.onload = () => resolve();
+        script.onerror = () => reject(new Error(`Failed to load script: ${url}`));
+        document.head.appendChild(script);
+    });
 }
 
 export function interpolate(template,env) {
-        const config = env.config;
-        const lang = env.lang;
-        return template.replace(/{{(.*?)}}/g, (_, key) => {
-            const trimmedKey = key.trim();
+    const config = env.config;
+    const lang = env.lang;
+    const unknown = '???'
+    const specialKeys = {
+        lang: () => lang ?? unknown,
+        langLabel: () => config.langs?.[lang] ?? unknown,
+        altlang: () => lang === 'ja' ? 'en' : 'ja',
+        altlangLabel: () => {
+            const alt = lang === 'ja' ? 'en' : 'ja';
+            return config.langs?.[alt] ?? unknown;
+        }
+    };
 
-            if (trimmedKey === "lang") {
-                return lang ?? '???';
+    const getValueFromPath = (path) => {
+        return path.split('.').reduce((acc, key) => {
+            if (acc && typeof acc === 'object' && key in acc) {
+                return acc[key];
             }
+            return undefined;
+        }, config);
+    };
 
-            const path = trimmedKey.split('.');
-            let val = config;
-            for (const prop of path) {
-                if (val && typeof val === 'object' && prop in val) {
-                    val = val[prop];
-                } else {
-                    return '???';
-                }
-            }
-            return val;
-        });
+    return template.replace(/{{(.*?)}}/g, (_, key) => {
+        const trimmedKey = key.trim();
+        if (trimmedKey in specialKeys) {
+            return specialKeys[trimmedKey]();
+        }
+
+        const val = getValueFromPath(trimmedKey);
+        return val !== undefined ? val : unknown;
+    });
 }
 
 async function loadContents(contentType, pluralize, env) {
@@ -173,25 +184,22 @@ async function loadContents(contentType, pluralize, env) {
 
 export async function loadContentsList(pluralize, env) {
     const config = env.config
+    const tagsListRaw = document.body.dataset.tags || "";
+    const tagsList = tagsListRaw.split(/\s+/).map(tag => tag.toLowerCase());
+    const contentTypesList = Object.keys(config.contentTypes);
     try {
-        const contentTypes = Object.keys(config.contentTypes);
-
-        await Promise.all(
-        contentTypes.map(contentType => loadContents(contentType, pluralize, env))
-        );
-
-        //typesetなくてもいけないかは要検証
-        if (window.MathJax) {
-            await MathJax.typesetPromise();
-        }
+        const validTypes = contentTypesList.filter(word => tagsList.includes(pluralize(word) + "-list"));
+        const promises = validTypes.map(contentType => loadContents(contentType, pluralize, env));
+        await Promise.all(promises);
     } catch (err) {
         console.error(`loadContentsList error:`, err);
     }
 }
 
-export function setupLanguageSwitcher(targetLang) {
+export function setupLanguageSwitcher() {
     const buttons = document.querySelectorAll('#language-switcher button')
     buttons.forEach(btn => btn.addEventListener('click', () => {
+        const targetLang = btn.dataset.lang
         const currentPath = location.pathname;
         const currentLang = currentPath.split('/')[1];
         const newPath = currentPath.replace(`${currentLang}`,`${targetLang}`);

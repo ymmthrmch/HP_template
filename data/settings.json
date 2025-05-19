@@ -4,7 +4,7 @@
                 "url": "https://cdn.jsdelivr.net/npm/pluralize@8.0.0/pluralize.min.js",
                 "defer": true,
                 "loadToAllPages": false,
-                "tags": ["contents-list"]
+                "tags": ["__PLACEHOLDER__-list"]
             }
     }
 }

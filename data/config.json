@@ -12,7 +12,9 @@
                 "themeTextColor": "rgb(4, 13, 48)",
                 "themeBackgroundColor": "rgb(255,255,255)",
                 "themeTransparentBackground": "rgba(255,255,255,0.8)",
-                "accentColor": "#e74c3c"
+                "accentColor": "#e74c3c",
+                "iconImageDark": "/images/icons/icon-blue.png",
+                "iconImageLight": "/images/icons/icon-white.png"
             }
         }
     },
@@ -20,7 +22,10 @@
         "example": {"ja":"例","en":"examples"}
     },
     "introLength": {"ja":150,"en":200},
-    "langs": ["ja","en"],
+    "langs": {
+        "ja":"日本語",
+        "en":"English"
+    },
     "scripts": {
         "scriptName": {
             "url": "path/to/script",
@@ -35,7 +40,7 @@
             "tags": []
         }
     },
-    "siteIcon": "/images/icons/icon.png",
+    "siteIcon": "/images/icons/icon-blue.png",
     "sns": {
         "name": {
             "icon": "path/to/icon/image",
