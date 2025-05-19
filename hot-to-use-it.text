@@ -62,6 +62,11 @@ htmlについて
         * 変数はconfigの中の項目をドット記法で参照する.
         * {{lang}}だけは予約されていてurl先頭にある言語を参照する.
 
+    #数式
+        * bodyのdata-tags属性にmathjaxを追加することでMathJaxを使用できる．
+        * inlineは\(と\)で，displayは\[と\]で囲うことでTeXの記法が使える.
+        * これらのdelimiterは/data/config.jsonのmathjax内で変更可能だが,$を用いたものはうまく行かないことが多い.
+
     #headの変更
         * main.jsの読み込み,SOE系のmetaタグは各htmlに書き込む.
         * 一括変更はincludes/head.pyを変更してupdate.pyを実行することでできる.（head.htmlを書き換えただけでは変更されない！）

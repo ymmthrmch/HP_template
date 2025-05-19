@@ -1,6 +1,6 @@
 {
     "colors": {
-        "theme": "green",
+        "theme": "red",
         "colorBook": {
             "custom": {
             },
@@ -27,6 +27,42 @@
                 "accentColor": "#e74c3c",
                 "iconImageDark": "/images/icons/icon-blue.png",
                 "iconImageLight": "/images/icons/icon-white.png"
+            },
+            "red": {
+                "themeDarkColor": "rgb(153, 27, 27)",
+                "themeLightColor": "rgb(255, 235, 235)",
+                "themeTransparentDarkColor": "rgba(153, 27, 27, 0.8)",
+                "themeTransparentLightColor": "rgba(255, 235, 235, 0.9)",
+                "themeTextColor": "rgb(67, 0, 0)",
+                "themeBackgroundColor": "rgb(255,255,255)",
+                "themeTransparentBackground": "rgba(255,255,255,0.8)",
+                "accentColor": "#2980b9",
+                "iconImageDark": "/images/icons/icon-red.png",
+                "iconImageLight": "/images/icons/icon-white.png"
+            },
+            "orange": {
+                "themeDarkColor": "rgb(202, 103, 0)",
+                "themeLightColor": "rgb(255, 248, 237)",
+                "themeTransparentDarkColor": "rgba(202, 103, 0, 0.8)",
+                "themeTransparentLightColor": "rgba(255, 248, 237, 0.9)",
+                "themeTextColor": "rgb(80, 40, 0)",
+                "themeBackgroundColor": "rgb(255,255,255)",
+                "themeTransparentBackground": "rgba(255,255,255,0.8)",
+                "accentColor": "#3498db",
+                "iconImageDark": "/images/icons/icon-orange.png",
+                "iconImageLight": "/images/icons/icon-white.png"
+            },
+            "pink": {
+                "themeDarkColor": "rgb(191, 64, 128)",
+                "themeLightColor": "rgb(255, 240, 250)",
+                "themeTransparentDarkColor": "rgba(191, 64, 128, 0.8)",
+                "themeTransparentLightColor": "rgba(255, 240, 250, 0.9)",
+                "themeTextColor": "rgb(85, 0, 51)",
+                "themeBackgroundColor": "rgb(255,255,255)",
+                "themeTransparentBackground": "rgba(255,255,255,0.8)",
+                "accentColor": "#2ecc71",
+                "iconImageDark": "/images/icons/icon-pink.png",
+                "iconImageLight": "/images/icons/icon-white.png"
             }
         }
     },
@@ -47,18 +83,20 @@
         "ja":"日本語",
         "en":"English"
     },
+    "mathjax": {
+        "tex": {
+            "inlineMath": [["\\(", "\\)"]],
+            "displayMath": [["\\[","\\]"]],
+            "processEscapes": true,
+            "tags": "ams"
+        }
+    },
     "scripts": {
         "scriptName": {
             "url": "path/to/script",
             "defer": "bool whether add defer or not",
             "loadToAllPages": "bool whether load to all pages or not",
             "tags": ["tags to write in pages you want to add this script"]
-        },
-        "MathJax": {
-            "url": "https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js",
-            "defer": true,
-            "loadToAllPages": false,
-            "tags": []
         }
     },
     "siteIcon": "/images/icons/icon-blue.png",

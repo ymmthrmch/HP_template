@@ -52,10 +52,10 @@ async function afterLoadingDOM() {
     setupLanguageSwitcher();
 
     // MathJaxのtypeset
-    if ((document.body.dataset.tags || "").includes('mathjax')) {
-        if (window.MathJax) {
+    if (window.MathJax?.typesetPromise) {
         await MathJax.typesetPromise();
-        }
+    } else {
+        console.warn("MathJax.typesetPromise is not found.");
     }
 }
 
@@ -106,6 +106,23 @@ function applyTheme() {
 
 // in loadDOM
 async function addToHead () {
+    if (document.body.dataset.tags?.includes('mathjax')) {
+        window.MathJax = {
+            tex: {
+            inlineMath: config.mathjax.tex.inlineMath,
+            displayMath: config.mathjax.tex.displayMath,
+            processEscapes: config.mathjax.tex.processEscapes,
+            tags: config.mathjax.tex.tags
+            },
+            options: {
+            skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            renderActions: {
+                addMenu: []
+            }
+            }
+        };
+    }
+
     try {
         await tagMatchingValuation(
             [settings.scripts,config.scripts],
