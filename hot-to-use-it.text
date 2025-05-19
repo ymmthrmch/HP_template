@@ -63,8 +63,8 @@ htmlについて
         * {{lang}}だけは予約されていてurl先頭にある言語を参照する.
 
     #数式
-        * bodyのdata-tags属性にmathjaxを追加することでMathJaxを使用できる．
-        * inlineは\(と\)で，displayは\[と\]で囲うことでTeXの記法が使える.
+        * bodyのdata-tags属性にmathjaxを追加することでMathJaxを使用できる.
+        * inlineは\(と\)で,displayは\[と\]で囲うことでTeXの記法が使える.
         * これらのdelimiterは/data/config.jsonのmathjax内で変更可能だが,$を用いたものはうまく行かないことが多い.
 
     #headの変更
@@ -100,7 +100,7 @@ htmlについて
             - headerにid属性がbg-imageのdivとして格納している.（スマホ対応のため）
 
     #htmlの自動読込
-        * 特定のtag(bodyのdata-tags属性)を有するhtmlファイルにjsで自動的にhtmlファイルを埋め込むように設定できる．
+        * 特定のtag(bodyのdata-tags属性)を有するhtmlファイルにjsで自動的にhtmlファイルを埋め込むように設定できる.
         * やり方は以下.
         * /includes内(推奨)に挿入したいhtmlファイルを作成する.
         * /data/config.jsonのhtmlPartialsに項目を追加する.
@@ -129,6 +129,14 @@ htmlについて
     #pageの作成,編集
         * /{{lang}}内の編集したいpageのhtmlファイルを(必要なら作成し)編集する.
         * 必要なら他言語のhtmlも(必要なら作成し)編集する.
+        *　以下テンプレートについての説明
+            - h2要素でページタイトルを追加.
+            - 以下の背景をつけるならば以下に従う.
+                divにclass="content"を付したもので項目全体を囲う.
+                div class="content"の子要素として,h3要素にclass="content-title"を付したもので項目のタイトルを記入する.文字装飾される.
+                div class="content"の子要素のdivでclass="content-text"を付したものが本文扱い.
+            - contentの一覧を作りたいときはbodyのdata-tags属性にdivに{{contentTypeS}}-listを追加し,id="{{contents}}-list"を付したdivを書く.中身はなくて良い.
+            - 一覧に表示されるイントロの文字数は/data/config.jsonのintroLengthで変更可能.
 
     #contentの作成,編集
         * contentの種類をcontentType,その複数形をcontentTypeSと表記する.
@@ -136,6 +144,11 @@ htmlについて
         * 必要なら他言語のhtmlも(必要なら作成し)編集する.
         * 新規作成した場合,/data/contents_list/{{contentTypeS}}.jsonに記事の情報を追加する.
         * 新規作成でない場合も/data/contents-list/{{contentTypeS}}.jsonの更新日時などを編集する.
+        * 以下テンプレートについての説明
+            - divにclass="content"を付したもので全体を囲う.data-content-typeに{{content}}を記入.
+            - div class="content"の子要素として,h3要素にclass="content-title"を付したものでタイトルを記入する.文字装飾される.
+            - div class="content"の子要素のdivでclass="content-text"を付したものが本文扱いで,その最初150文字以下が一覧にイントロとして表示される.
+            - イントロの文字数は/data/config.json内のintroLengthで変更可能.
 
     #contentTypeの新規作成
         * contentの種類をcontentType,その複数形をcontentTypeSと表記する.
@@ -146,7 +159,11 @@ htmlについて
         * /{{lang}}内に{{contentTypeS}}.htmlを作成する.bodyのdata-tags属性に{{contentTypes}}-listを追加する.
         * {{contentTypeS}}.html内にid属性が{{contentTypeS}}-listのdivを作成すると,それが記事一覧に置き換わる.
 
-外観
+デザイン
     #テーマカラー
         * テーマカラーは/data/config.jsonのcolors内のthemeに,colorBookにある色を記述することで変更できる.
         * colorBookに項目を追加することでカスタムも可能.
+    #文字装飾
+        * h1,h2は単語の頭文字に.initialsが,h3は最初の1文字に.first-letterがclass属性にjsで自動的に追加される.
+        * デザインを変えたい場合は.initialsや.first-letterを編集.
+        * 文字装飾が施される要素を変えたかったらmain.jsのafterLoadingDOM内のwrapInitialsやwrapFirtsLetterを編集.
