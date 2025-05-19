@@ -3,7 +3,114 @@ HOW TO USE IT
 last editted: 2025-05-19
 editted by: Harumichi Yamamoto
 
-このファイル内でも{{kamo}}で変数を表す.詳しくは#html内の変数を参照.
+わからない人向けのチュートリアル.
+    ユーザーが操作するのは基本的に以下のものです.
+
+        /ja: このディレクトリの中に公開するファイルを保存していきます.
+        /en: 英語版はこっちに保存します.
+
+    試しに一つページを作ってみましょう.以下のファイルを探してください.
+
+        /templates/ content-en.html
+                    content-ja.html
+                    page-en.html
+                    page-ja.html <-これ
+
+    この/templatesディレクトリの中にはテンプレートが入っているので,これをコピペして作るようにしましょう.
+    ではpage-ja.htmlをjaの中にコピーしてください./jaは以下のようになりましたか？
+
+        /ja/examples
+            examples.html
+            index.html
+            page-ja.html <-追加された
+
+    ではpage-ja.htmlの名前をabout.htmlに変更しましょう.(名前は何でも構いません)
+
+        /ja/examples
+            examples.html
+            index.html
+            about.html <-名前を変更した
+    
+    ではabout.htmlを開いてみましょう.
+    
+        <main>
+        <h2>
+            <!-- page title -->
+        </h2>
+        <!-- sentences -->
+        <div class="box">
+            <h3 class="box-title"><!-- some title --></h3>
+            <hr>
+            <!-- some texts -->
+        </div>
+        </main>
+    
+    中央部分はこんな感じになってますね.基本的に編集するのはこの<main>と</main>に囲われている部分です.
+    <!-- page-title -->の部分をAboutと書き換えましょう.(Aboutでなくても良いです.以下同様)
+
+        <h2>
+            About <-書き換えた
+        </h2>
+
+    これがこのページのタイトルになります.
+    <!-- sentences -->の部分も書き換えましょう.
+
+        <h2>
+            About
+        </h2>
+        私は金木犀が好きです <-書き換えた
+
+    ここがあなたがメインで文章を書いていく場所になります.
+    もし文章を四角で囲みたくなったら,
+
+        <div class="box">
+            <h3 class="box-title"><!-- some title --></h3>
+            <hr>
+            <!-- some texts -->
+        </div>
+
+    を使ってみましょう.<!-- some title -->がタイトル,<!-- some texts -->が文章を書く場所になります.
+    
+        <div class="box">
+            <h3 class="box-title">秋の定義</h3>
+            <hr>
+            金木犀の香りの閉包を秋と呼ぶ.
+        </div>
+
+    こうすると文章とタイトルが枠で囲まれ,タイトルが装飾されます.
+    ページ上部の帯の部分(ナビゲーションと言います)にAboutがないのが気になりますね.
+    /includesディレクトリ内のheader.htmlを開いてみましょう.
+    
+        /includes/  content-summary.html
+                    footer.html
+                    head-en.html
+                    head-ja.html
+                    header.html <-これ
+
+    開いてみるとこんな感じ
+
+        <nav id="site-nav">
+            <ul>
+                <li class="with-light-icon nav-item"><a href="/{{lang}}/index.html">Home</a></li>
+                <li class="with-light-icon nav-item"><a href="/{{lang}}/examples.html">Examples</a></li>
+            </ul>
+        </nav>
+
+    ここがナビゲーションの部分です.ここにAboutを書き加えましょう.
+
+        <nav id="site-nav">
+            <ul>
+                <li class="with-light-icon nav-item"><a href="/{{lang}}/index.html">Home</a></li>
+                <li class="with-light-icon nav-item"><a href="/{{lang}}/about.html">About</a></li> <-書き加えた
+                <li class="with-light-icon nav-item"><a href="/{{lang}}/examples.html">Examples</a></li>
+            </ul>
+        </nav>
+
+    /{{lang}}/のあとはファイル名を記述します.これでナビゲーションにAboutが追加されましたね.
+
+    
+
+このファイル内では{{kamo}}で変数を表す.詳しくは#html内の変数を参照.
 
 設計思想
     基本的に変更が想定されるものはconfig.jsonの編集（と悔しながらupdate.pyの実行）によってできるようにした.
@@ -44,8 +151,10 @@ editted by: Harumichi Yamamoto
 初期設定
     #/index.html
         rootにアクセスしたときに表示するリダイレクト先を記述.デフォルトは/ja/index.html.
-    #必要なpage,contentTypeを作成する.
-
+    #必要なpage,contentTypeを,『更新の仕方』の項を参考に作成する.
+    #スマホ画面対応の調整をする.
+        * /css/style.css,media query内の@media(max-width=kamo)のkamoの数値を調整する.
+        * これによってどのぐらいの画面幅で言語切替ボタンやナビゲーション(pageへのリンク)の配置が変化するかが決まる.
 
 htmlについて
     #scriptの読み込み
@@ -135,8 +244,8 @@ htmlについて
             - 全てmain内に記述.
             - h2要素でページタイトルを追加.
             - 以下の背景をつけるならば以下に従う.
-                divにclass="content"を付したもので項目全体を囲う.
-                div class="content"の子要素として,h3要素で項目のタイトルを記入する.文字装飾される.
+                divにclass="box"を付したもので項目全体を囲う.
+                div class="box"の子要素として,h3要素にclass="box-title"を付したもので項目のタイトルを記入する.文字装飾される.
                 その直後に<hr>を配置.
                 さらにその直後に本文を記述.
             - contentの一覧を作りたいときはbodyのdata-tags属性にdivに{{contentTypeS}}-listを追加し,id="{{contents}}-list"を付したdivを書く.中身はなくて良い.
@@ -154,6 +263,7 @@ htmlについて
             - div class="content"の子要素として,h3要素にclass="content-title"を付したものでタイトルを記入する.文字装飾される.
             - div class="content"の子要素のdivでclass="content-text"を付したものが本文扱いで,その最初150文字以下が一覧にイントロとして表示される.
             - イントロの文字数は/data/config.json内のintroLengthで変更可能.
+            - page同様,box,box-titleも使用可能.
 
     #contentTypeの新規作成
         * contentの種類をcontentType,その複数形をcontentTypeSと表記する.

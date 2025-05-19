@@ -1,12 +1,12 @@
 /*
 目次
-    *
+    :root
     variable setting
-    tag
-    class
+    *
     id
-    header
-    footer
+    class
+    tag
+    media query
 */
 
 /* variable setting */
@@ -25,6 +25,12 @@
     /* jsで上書きされない */
     --theme-font: Courier, monospace, serif;
     --normal-font: Arial, sans-serif, serif;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
 
 /* id */
@@ -54,6 +60,25 @@
     position: absolute;
     right: 1em;
     bottom: 0.8em;
+}
+
+#site-nav {
+    padding: 0.2em;
+    margin: 0em;
+    background-color: var(--theme-dark);
+    color: var(--theme-bg);
+}
+
+#site-nav ul{
+    list-style: none;
+    display: flex;
+    justify-content: center;
+    margin: 0em;
+    padding: 0em;
+}
+
+#site-nav ul li{
+    margin: 0em min(1vw, 1em);
 }
 
 /* class */
@@ -186,27 +211,9 @@ header hr {
     background-color: var(--theme-dark);
 }
 
-header #site-nav {
-    padding: 0.2em;
-    margin: 0em;
-    background-color: var(--theme-dark);
-    color: var(--theme-bg);
-}
-
-header #site-nav ul{
-    list-style: none;
-    display: flex;
-    justify-content: center;
-    margin: 0em;
-    padding: 0em;
-}
-
-header #site-nav ul li{
-    margin: 0em min(1vw, 1em);
-}
-
 hr {
     border: none;
+    margin: 1em 0em;
     height: 1px;
     background-color: var(--theme-text);
 }
@@ -221,4 +228,34 @@ main {
         -0.1em -0.1em 0.3em var(--theme-bg);
     margin: 2em 4em;
     flex: 1;
+}
+
+/* media query */
+@media (max-width: 530px) {
+    #site-nav ul{
+        flex-direction: column;
+        align-items: center;
+    }
+
+    #site-nav li {
+        margin: 0.3rem 0;
+    }
+}
+
+@media (max-width: 720px) {
+    header {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+
+    header h1 {
+        width: 100%;
+        margin-bottom: 0rem;
+    }
+
+    #language-switcher {
+            position: static;
+        margin-bottom: 0.7rem;
+    }
 }
