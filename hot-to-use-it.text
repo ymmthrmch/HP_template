@@ -44,6 +44,8 @@ editted by: Harumichi Yamamoto
 初期設定
     #/index.html
         rootにアクセスしたときに表示するリダイレクト先を記述.デフォルトは/ja/index.html.
+    #必要なpage,contentTypeを作成する.
+
 
 htmlについて
     #scriptの読み込み
@@ -69,15 +71,14 @@ htmlについて
 
     #headの変更
         * main.jsの読み込み,SOE系のmetaタグは各htmlに書き込む.
-        * 一括変更はincludes/head.pyを変更してupdate.pyを実行することでできる.（head.htmlを書き換えただけでは変更されない！）
+        * 一括変更はincludes/head-ja.html,head-en.htmlを変更して/update.pyを実行することでできる.（head.htmlを書き換えただけでは変更されない）
+        * update.pyを実行するためにターミナルでルートディレクトリに移動し下記を実行.
+            python update.py <lang>
+        * update.pyは引数を一つ取り,日本語版を変更するならjaを,英語版ならenを入力.
         * update.pyはhtmlファイル内のキー
             <!-- KEY:kamo -->
             <!-- ENDKEY -->
-        で囲まれた部分(kamoは変数)を指定されたテンプレートファイルの中身と置き換える.
-        * update.pyは以下の三つを引数にとる.
-            <path to a template file>: ここで指定したファイルに置き換わる./includes/head.htmlを指定.
-            <path to a target directory>: ここで指定したディレクトリ内のhtmlに変更が反映される.
-            <key>: 置き換えのためのキー.headを指定する.
+        で囲まれた部分(kamoは変数)を指定されたテンプレートファイルの中身と置き換えるようになっている.
 
     #テキストの装飾
         * 一部の文字のみへの文字装飾
@@ -129,6 +130,7 @@ htmlについて
     #pageの作成,編集
         * /{{lang}}内の編集したいpageのhtmlファイルを(必要なら作成し)編集する.
         * 必要なら他言語のhtmlも(必要なら作成し)編集する.
+        * /includes/header.htmlにリンクを記述する.
         *　以下テンプレートについての説明
             - 全てmain内に記述.
             - h2要素でページタイトルを追加.
