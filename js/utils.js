@@ -75,7 +75,7 @@ function extractHtmlSnippet(domNode, limit = 100, suffix = '') {
     return wrapper.outerHTML;
 }
 
-export function importScript(url, deferFlag = true) {
+export function importOneScript(url, deferFlag = true) {
     return new Promise((resolve, reject) => {
         if (document.querySelector(`script[src = "${url}"]`)){
         resolve();
@@ -196,6 +196,20 @@ export async function loadContentsList(pluralize, env) {
     }
 }
 
+export async function loadOneHTMLPartial(url, target, position) {
+    const response = await fetch(url);
+    const html = await response.text();
+
+    const tmp = document.createElement('div');
+    tmp.innerHTML = html;
+    const container = document.querySelector(target);
+    if (container) {
+        container.insertAdjacentElement(position, tmp);
+    } else {
+        console.warn(`Target element "${target}" not found for partial "${partial}"`);
+    }
+}
+
 export function setupLanguageSwitcher() {
     const buttons = document.querySelectorAll('#language-switcher button')
     buttons.forEach(btn => btn.addEventListener('click', () => {
@@ -205,6 +219,39 @@ export function setupLanguageSwitcher() {
         const newPath = currentPath.replace(`${currentLang}`,`${targetLang}`);
         location.pathname = newPath;
     }));
+}
+
+export async function tagMatchingValuation(contextsList, func, args, kwargs) {
+    if (typeof func !== 'function') {
+        throw new Error('Second argument must be a function');
+    }
+    const tagsListRaw = document.body.dataset.tags || "";
+    const tagsList = tagsListRaw.split(/\s+/).map(tag => tag.toLowerCase());
+
+    const shouldLoadScript = (item) => {
+        if (item.loadToAllPages === true) return true;
+        if (!Array.isArray(item.tags)) return false;
+        return item.tags.some(tag => {
+            if (tag.includes("__PLACEHOLDER__")) {
+                const pattern = tag.replace("__PLACEHOLDER__", ".*");
+                const regex = new RegExp(`^${pattern}$`, 'i');
+                return item.tags.some(itemtag => regex.test(itemtag));
+            }
+            return tagsList.includes(tag.toLowerCase());
+        });
+    };
+
+    const valuate = (context) => {
+        return Object.values(context)
+            .filter(shouldLoadScript)
+            .map(item => {
+                const newArgs = args.map(key => item[key]);
+                return func(...newArgs, ...([kwargs] ? [kwargs] : []));
+            });
+    };
+
+    const promises = contextsList.flatMap(valuate);
+    await Promise.all(promises);
 }
 
 export function wrapFirstLetter(targetTag, classToAdd) {

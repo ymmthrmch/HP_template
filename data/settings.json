@@ -1,4 +1,20 @@
 {
+    "htmlPartials": {
+        "footer": {
+                "url": "/includes/footer.html",
+                "loadToAllPages": true,
+                "target": "body",
+                "position": "beforeend",
+                "tags": []
+            },
+        "header": {
+                "url": "/includes/header.html",
+                "loadToAllPages": true,
+                "target": "body",
+                "position": "afterbegin",
+                "tags": []
+            }
+    },
     "scripts": {
             "pluralize": {
                 "url": "https://cdn.jsdelivr.net/npm/pluralize@8.0.0/pluralize.min.js",

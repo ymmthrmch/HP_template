@@ -2,13 +2,13 @@ import os
 import re
 import sys
 
-if len(sys.argv) != 4:
-    print("使い方: python script.py <template_path> <target_dir> <key_name>")
-    sys.exit(1)
+# if len(sys.argv) != 4:
+#     print("使い方: python script.py <template_path> <target_dir> <key_name>")
+#     sys.exit(1)
 
-template_path = sys.argv[1]
-target_dir = sys.argv[2]
-key_name = sys.argv[3]
+template_path = "./includes/head.html" #sys.argv[1]
+target_dir = "." #sys.argv[2]
+key_name = "head" # sys.argv[3]
 
 with open(template_path, 'r', encoding='utf-8') as f:
     template_content = f.read()

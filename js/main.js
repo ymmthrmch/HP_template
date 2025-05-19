@@ -1,8 +1,10 @@
 import {
     applyInterpolateToDOM,
-    importScript,
+    importOneScript,
     loadContentsList,
+    loadOneHTMLPartial,
     setupLanguageSwitcher,
+    tagMatchingValuation,
     wrapFirstLetter,
     wrapInitials
 } from './utils.js';
@@ -33,9 +35,7 @@ async function initAppData() {
 async function loadDOM() {
     await addToHead();
     await Promise.all([
-        loadHeader(),
         addToBody(),
-        loadFooter(),
     ])
 }
 
@@ -106,46 +106,27 @@ function applyTheme() {
 
 // in loadDOM
 async function addToHead () {
-    const scrlistRaw = document.body.dataset.tags || "";
-    const scrlist = scrlistRaw.split(/\s+/).map(tag => tag.toLowerCase());
-
-    const shouldLoadScript = (scr) => {
-        if (scr.loadToAllPages === true) return true;
-        if (!Array.isArray(scr.tags)) return false;
-        return scr.tags.some(tag => {
-        if (tag.includes("__PLACEHOLDER__")) {
-            const pattern = tag.replace("__PLACEHOLDER__", ".*");
-            const regex = new RegExp(`^${pattern}$`, 'i');
-            return scr.tags.some(scrtag => regex.test(scrtag));
-        }
-        return scr.tags.some(tag => scrlist.includes(tag.toLowerCase()));
-        });
+    try {
+        await tagMatchingValuation(
+            [settings.scripts,config.scripts],
+            importOneScript,
+            ['url','defer']
+        );
+    } catch (err) {
+        console.error('importScripts error:', err);
     }
-
-    const getScriptsToImport = (scriptsObj) => {
-        return Object.values(scriptsObj)
-            .filter(shouldLoadScript)
-            .map(scr => importScript(scr.url, scr.defer));
-    };
-
-    const promises = [
-        ...getScriptsToImport(settings.scripts),
-        ...getScriptsToImport(config.scripts)
-    ];
-
-    await Promise.all(promises);
-}
-
-async function loadHeader() {
-    if (document.querySelector('header')) return;
-    const res = await fetch('/includes/header.html');
-    const html = await res.text();
-    const tmp = document.createElement('div');
-    tmp.innerHTML = html;
-    document.body.insertBefore(tmp,document.body.firstChild);
 }
 
 async function addToBody() {
+    try {
+        await tagMatchingValuation(
+            [settings.htmlPartials,config.htmlPartials],
+            loadOneHTMLPartial,
+            ['url','target','position']
+        );
+    } catch (err) {
+        console.error('loadOneHTMLPartial error:', err);
+    }
     try {
         if (!window.pluralize) {
             throw new Error("window.pluralize is not available");
@@ -154,14 +135,4 @@ async function addToBody() {
     } catch (err) {
         console.error("addToBody error:", err);
     }
-}
-
-
-async function loadFooter() {
-    if (document.querySelector('footer')) return;
-    const res = await fetch('/includes/footer.html');
-    const html = await res.text();
-    const tmp = document.createElement('div');
-    tmp.innerHTML = html;
-    document.body.appendChild(tmp);
 }

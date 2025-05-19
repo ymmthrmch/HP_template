@@ -14,6 +14,33 @@ editted by: Harumichi Yamamoto
         htmlファイルの追加,編集 -> /{{lang}}, /includes
     と,jsでhtmlやcssの記述をすることがないように,編集したいときどこを見ればいいかわかりやすいようにした.
 
+ディレクトリ構造
+    /css: css用.
+        style.css: cssファイルはこれのみ.
+
+    /data: jsが参照するファイル用.
+        /contents_list: contentを一覧表示する際に参照するファイル用.
+        config.json: ユーザーが変更できる設定を格納.
+        settings.json: ユーザーが変更するべきでない設定を格納.
+
+    /images: 画像用.
+        /icons: サイトアイコンやsnsアイコン用.
+
+    /includes: jsが読み込んで使用するhtmlファイル用.
+
+    /js: js用.
+
+    /locales: 翻訳用.
+
+    how-to-use-it.text: この説明書.愛情がこもってる.
+
+    index.html: ルートにアクセスしたときにリダイレクトするためのhtmlファイル.
+
+    update.py: headを変更する際に走らせる
+
+    /{{lang}}: 言語ごとのhtmlファイル保管ディレクトリ.
+        /{{contentTypeS}}: contentのhtmlファイルを保管するディレクトリ.
+
 初期設定
     #/index.html
         rootにアクセスしたときに表示するリダイレクト先を記述.デフォルトは/ja/index.html.
@@ -23,7 +50,10 @@ htmlについて
         * 基本的には各ページでheadに記述して読み込む.
         * よく使う項目はbodyにdata-src属性として追加することで読み込める.
             - /data/config.jsonのscriptsに使用したいscriptを追加する.
-            - 全てのページでscriptを読み込みたいときはloadToAllPagesをtrueにする.
+                url: スクリプトのurl.
+                defer: deferをつけるならtrue,でなければfalse.
+                loadToAllPages: 全てのページに読み込む場合true,でなければfalse.
+                tags: スクリプトを読み込むhtmlファイルのbodyのdata-tags属性に追加するタグを記述.
             - tagsに記述したtagをbodyのdata-scr属性に空白区切りで記述すると読み込まれる.
             - bodyのdata-scr属性にscriptNameを小文字,空白区切りで記述しても読み込まれる.
 
@@ -56,13 +86,29 @@ htmlについて
         * script
             - 外部スクリプトを/data/config.jsonのscriptsに設定し,htmlのbodyにdata-tags属性で付与をコントロール.
         * <header>
-            - 基本/includes/header.htmlをmain.jsのloadHeaderで挿入している.
+            - 基本/includes/header.htmlをmain.jsのloadHTMLPartialsで挿入している.
             - htmlファイルには書いた場合,そちらが優先される.
         * <footer>
-            - /includes/footer.htmlをmain.jsのloadFooterで挿入している.
+            - /includes/footer.htmlをmain.jsのloadHTMLPartialsで挿入している.
             - htmlファイルには書いた場合,そちらが優先される.
         * 背景画像
             - headerにid属性がbg-imageのdivとして格納している.（スマホ対応のため）
+
+    #htmlの自動読込
+        * 特定のtag(bodyのdata-tags属性)を有するhtmlファイルにjsで自動的にhtmlファイルを埋め込むように設定できる．
+        * やり方は以下.
+        * /includes内(推奨)に挿入したいhtmlファイルを作成する.
+        * /data/config.jsonのhtmlPartialsに項目を追加する.
+            - url: 挿入するhtmlファイルへのパス.
+            - loadToAllPages: 全てのページに読み込む場合true,でなければfalse.
+            - target: 挿入する位置の基準となる要素.cssセレクターが使える.
+            - position: targetに対してどの位置で挿入するか.以下が使用可能.
+                beforestart: targetの直前に挿入.
+                afterstart: targetの一番最初の子要素として挿入.
+                beforeend: targetの一番最後の子要素として挿入.
+                afterend: targetの直後に挿入.
+            - tags: 挿入先のhtmlファイルのbodyのdata-tags属性に追加するタグを記述.
+        * 挿入先のhtmlファイルのbodyのdata-tags属性に追加するタグを記述する.
 
 更新の仕方
     #記事の種類
@@ -74,23 +120,28 @@ htmlについて
             - /{{lang}}/{{contentTypeS}}内にあるページ.contentTypeという種類を持つ.
             - 連載記事のようなイメージ.
             - /{{lang}}/{{contentTypeS}}.htmlにcontentTypeのcontentが一覧で表示される.
+
     #pageの作成,編集
         * /{{lang}}内の編集したいpageのhtmlファイルを(必要なら作成し)編集する.
         * 必要なら他言語のhtmlも(必要なら作成し)編集する.
+
     #contentの作成,編集
         * contentの種類をcontentType,その複数形をcontentTypeSと表記する.
         * /{{lang}}/{{contentTypes}}内の編集したいhtmlファイルを(必要なら作成し)編集する.
         * 必要なら他言語のhtmlも(必要なら作成し)編集する.
         * 新規作成した場合,/data/contents_list/{{contentTypeS}}.jsonに記事の情報を追加する.
         * 新規作成でない場合も/data/contents-list/{{contentTypeS}}.jsonの更新日時などを編集する.
+
     #contentTypeの新規作成
         * contentの種類をcontentType,その複数形をcontentTypeSと表記する.
-        * /data/config.jsonのcontentTypes内にcontentTypeの項を追加し,"ja","en"にはそれぞれ日本語,英語での表記を書く．
+        * /data/config.jsonのcontentTypes内にcontentTypeの項を追加.
+            - ja: {{contentTypeS}}の日本語表記.
+            - en: {{contentTypeS}}の英語表記(複数形推奨).
         * /data/contents_list内に{{contentTypes}}.jsonを作成する.
         * /{{lang}}内に{{contentTypeS}}.htmlを作成する.bodyのdata-tags属性に{{contentTypes}}-listを追加する.
         * {{contentTypeS}}.html内にid属性が{{contentTypeS}}-listのdivを作成すると,それが記事一覧に置き換わる.
 
 外観
     #テーマカラー
-        * テーマカラーは/data/config.jsonのcolors内のthemeに同じくcolors内のcolorBookにある色を記述することで変更できる.
+        * テーマカラーは/data/config.jsonのcolors内のthemeに,colorBookにある色を記述することで変更できる.
         * colorBookに項目を追加することでカスタムも可能.

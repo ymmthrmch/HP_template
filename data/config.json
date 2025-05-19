@@ -33,6 +33,15 @@
     "contentTypes": {
         "example": {"ja":"例","en":"examples"}
     },
+    "htmlPartials": {
+        "partialName": {
+            "url": "path/to/partial",
+            "loadToAllPages": "bool whether load to all pages or not",
+            "target": "target element. use css selector",
+            "position": "location to insert the element in relation to the target. use options of insertAdjacentElement",
+            "tags": ["tags you write in pages you want to add this partial"]
+        }
+    },
     "introLength": {"ja":150,"en":200},
     "langs": {
         "ja":"日本語",
