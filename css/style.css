@@ -61,7 +61,7 @@
     color: var(--accent-color);
 }
 
-.content {
+.box {
     background-color: var(--theme-tp-light);
     color: var(--theme-text);
     margin: 0.5em auto;
@@ -71,12 +71,12 @@
     text-shadow: none;
 }
 
-.content .content-title a {
+.box .box-title a {
     text-decoration: none;
     color: inherit;
 }
 
-.content hr {
+.box hr {
     margin-top: 0.1em;
 }
 

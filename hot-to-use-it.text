@@ -130,11 +130,13 @@ htmlについて
         * /{{lang}}内の編集したいpageのhtmlファイルを(必要なら作成し)編集する.
         * 必要なら他言語のhtmlも(必要なら作成し)編集する.
         *　以下テンプレートについての説明
+            - 全てmain内に記述.
             - h2要素でページタイトルを追加.
             - 以下の背景をつけるならば以下に従う.
                 divにclass="content"を付したもので項目全体を囲う.
-                div class="content"の子要素として,h3要素にclass="content-title"を付したもので項目のタイトルを記入する.文字装飾される.
-                div class="content"の子要素のdivでclass="content-text"を付したものが本文扱い.
+                div class="content"の子要素として,h3要素で項目のタイトルを記入する.文字装飾される.
+                その直後に<hr>を配置.
+                さらにその直後に本文を記述.
             - contentの一覧を作りたいときはbodyのdata-tags属性にdivに{{contentTypeS}}-listを追加し,id="{{contents}}-list"を付したdivを書く.中身はなくて良い.
             - 一覧に表示されるイントロの文字数は/data/config.jsonのintroLengthで変更可能.
 
@@ -145,7 +147,8 @@ htmlについて
         * 新規作成した場合,/data/contents_list/{{contentTypeS}}.jsonに記事の情報を追加する.
         * 新規作成でない場合も/data/contents-list/{{contentTypeS}}.jsonの更新日時などを編集する.
         * 以下テンプレートについての説明
-            - divにclass="content"を付したもので全体を囲う.data-content-typeに{{content}}を記入.
+            - 全てmain内に記述.
+            - divにclass="content"を付したもので全体を囲う.
             - div class="content"の子要素として,h3要素にclass="content-title"を付したものでタイトルを記入する.文字装飾される.
             - div class="content"の子要素のdivでclass="content-text"を付したものが本文扱いで,その最初150文字以下が一覧にイントロとして表示される.
             - イントロの文字数は/data/config.json内のintroLengthで変更可能.
