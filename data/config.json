@@ -1,6 +1,6 @@
 {
     "colors": {
-        "theme": "blue",
+        "theme": "green",
         "colorBook": {
             "custom": {
             },
@@ -10,6 +10,18 @@
                 "themeTransparentDarkColor": "rgba(14, 40, 143, 0.8)",
                 "themeTransparentLightColor": "rgba(237, 247, 255, 0.9)",
                 "themeTextColor": "rgb(4, 13, 48)",
+                "themeBackgroundColor": "rgb(255,255,255)",
+                "themeTransparentBackground": "rgba(255,255,255,0.8)",
+                "accentColor": "#e74c3c",
+                "iconImageDark": "/images/icons/icon-blue.png",
+                "iconImageLight": "/images/icons/icon-white.png"
+            },
+            "green": {
+                "themeDarkColor": "rgb(10, 125, 79)",
+                "themeLightColor": "rgb(230, 250, 242)",
+                "themeTransparentDarkColor": "rgba(10, 125, 79, 0.8)",
+                "themeTransparentLightColor": "rgba(230, 250, 242, 0.9)",
+                "themeTextColor": "rgb(2, 40, 26)",
                 "themeBackgroundColor": "rgb(255,255,255)",
                 "themeTransparentBackground": "rgba(255,255,255,0.8)",
                 "accentColor": "#e74c3c",

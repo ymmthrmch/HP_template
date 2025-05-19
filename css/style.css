@@ -27,67 +27,16 @@
     --normal-font: Arial, sans-serif, serif;
 }
 
-/* header */
-    header {
-        top: 0;
-        left: 0;
-        width: 100%;
-        z-index: 100;
-        font-family: var(--theme-font);
-        margin-top: 0em; 
-        padding: 2em 0em 0em 0em;
-        color: var(--theme-dark);
-        background-color: var(--theme-bg);
-    }
-
-    header a {
-        text-decoration: none;
-        color: inherit;
-    }
-
-    /* above-hr */
-    #above-hr {
-        position: relative;
-        text-align: center;
-    }
-
-    #above-hr h1{
-        margin: 0em;
-    }
-
-    #language-switcher {
-        position: absolute;
-        right: 1em;
-        bottom: 0.8em;
-    }
-
-    header hr {
-        border: none;
-        height: 2px;
-        background-color: var(--theme-dark);
-    }
-
-    /* site-nav */
-    header #site-nav {
-        padding: 0.2em;
-        margin: 0em;
-        background-color: var(--theme-dark);
-        color: var(--theme-bg);
-    }
-
-    header #site-nav ul{
-        list-style: none;
-        display: flex;
-        justify-content: center;
-        margin: 0em;
-        padding: 0em;
-    }
-
-    header #site-nav ul li{
-        margin: 0em min(1vw, 1em);
-    }
-
 /* id */
+#header-top {
+    position: relative;
+    text-align: center;
+}
+
+#header-top h1{
+    margin: 0em;
+}
+
 #bg-image {
     position: fixed;
     top: 0em;
@@ -101,7 +50,17 @@
     z-index: -200;
 }
 
+#language-switcher {
+    position: absolute;
+    right: 1em;
+    bottom: 0.8em;
+}
+
 /* class */
+.accent {
+    color: var(--accent-color);
+}
+
 .content {
     background-color: var(--theme-tp-light);
     color: var(--theme-text);
@@ -114,6 +73,10 @@
 
 .content .content-title a {
     text-decoration: none;
+}
+
+.content hr {
+    margin-top: 0.1em;
 }
 
 .first-letter {
@@ -198,6 +161,48 @@ h3 {
     margin: 0em;
 }
 
+header {
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 100;
+    font-family: var(--theme-font);
+    margin-top: 0em; 
+    padding: 2em 0em 0em 0em;
+    color: var(--theme-dark);
+    background-color: var(--theme-bg);
+}
+
+header a {
+    text-decoration: none;
+    color: inherit;
+}
+
+header hr {
+    border: none;
+    height: 2px;
+    background-color: var(--theme-dark);
+}
+
+header #site-nav {
+    padding: 0.2em;
+    margin: 0em;
+    background-color: var(--theme-dark);
+    color: var(--theme-bg);
+}
+
+header #site-nav ul{
+    list-style: none;
+    display: flex;
+    justify-content: center;
+    margin: 0em;
+    padding: 0em;
+}
+
+header #site-nav ul li{
+    margin: 0em min(1vw, 1em);
+}
+
 hr {
     border: none;
     height: 1px;
@@ -205,7 +210,7 @@ hr {
 }
 
 main {
-    color: var(--theme-text);
+    color: var(--normal-text);
     text-shadow:
         0.1em 0.1em 0.2em var(--theme-bg),
         0.1em -0.1em 0.2em var(--theme-bg),

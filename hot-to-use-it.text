@@ -3,61 +3,94 @@ HOW TO USE IT
 last editted: 2025-05-16
 editted by: Harumichi Yamamoto
 
-このファイル内でも{{kamo}}で変数を表す．詳しくは#html内の変数を参照．
+このファイル内でも{{kamo}}で変数を表す.詳しくは#html内の変数を参照.
 
 設計思想
-    基本的に変更が想定されるものはconfig.jsonの編集（と悔しながらupdate.pyの実行）によってできるようにした．
+    基本的に変更が想定されるものはconfig.jsonの編集（と悔しながらupdate.pyの実行）によってできるようにした.
     また
         基本的な変更 -> /data/config.json（テーマカラー,snsリンクなど）
         外観の複雑な変更 -> /css/style.css
         内部機構の変更 -> /js/main.js,utils.js
         htmlファイルの追加,編集 -> /{{lang}}, /includes
-    と，jsでhtmlやcssの記述をすることがないように，編集したいときどこを見ればいいかわかりやすいようにした．
+    と,jsでhtmlやcssの記述をすることがないように,編集したいときどこを見ればいいかわかりやすいようにした.
 
 初期設定
     #/index.html
-        rootにアクセスしたときに表示するリダイレクト先を記述．デフォルトは/ja/index.html．
+        rootにアクセスしたときに表示するリダイレクト先を記述.デフォルトは/ja/index.html.
 
 htmlについて
     #scriptの読み込み
-        * 基本的には各ページでheadに記述して読み込む．
-        * よく使う項目はbodyにdata-src属性として追加することで読み込める．
-            - /data/config.json.scriptsに使用したいscriptを追加する．
-            - 全てのページでscriptを読み込みたいときはloadToAllPagesをtrueにする．
-            - tagsに記述したtagをbodyのdata-scr属性に空白区切りで記述すると読み込まれる．
-            - bodyのdata-scr属性にscriptNameを小文字,空白区切りで記述しても読み込まれる．
+        * 基本的には各ページでheadに記述して読み込む.
+        * よく使う項目はbodyにdata-src属性として追加することで読み込める.
+            - /data/config.jsonのscriptsに使用したいscriptを追加する.
+            - 全てのページでscriptを読み込みたいときはloadToAllPagesをtrueにする.
+            - tagsに記述したtagをbodyのdata-scr属性に空白区切りで記述すると読み込まれる.
+            - bodyのdata-scr属性にscriptNameを小文字,空白区切りで記述しても読み込まれる.
 
     #html内の変数
-        * htmlのテキストや属性に変数名を{{と}}で囲ったものを記述することで，変数を使用できる．
-        * 変数はconfigの中の項目をドット記法で参照する．
-        * {{lang}}だけは予約されていてurl先頭にある言語を参照する．
+        * htmlのテキストや属性に変数名を{{と}}で囲ったものを記述することで,変数を使用できる.
+        * 変数はconfigの中の項目をドット記法で参照する.
+        * {{lang}}だけは予約されていてurl先頭にある言語を参照する.
 
     #headの変更
-        * main.jsの読み込み，SOE系のmetaタグは各htmlに書き込む．
-        * 一括変更はincludes/head.pyを変更してupdate.pyを実行することでできる．（head.htmlを書き換えただけでは変更されない！）
+        * main.jsの読み込み,SOE系のmetaタグは各htmlに書き込む.
+        * 一括変更はincludes/head.pyを変更してupdate.pyを実行することでできる.（head.htmlを書き換えただけでは変更されない！）
         * update.pyはhtmlファイル内のキー
             <!-- KEY:kamo -->
             <!-- ENDKEY -->
-        で囲まれた部分(kamoは変数)を指定されたテンプレートファイルの中身と置き換える．
-        * update.pyは以下の三つを引数にとる．
-            <path to a template file>: ここで指定したファイルに置き換わる．/includes/head.htmlを指定．
-            <path to a target directory>: ここで指定したディレクトリ内のhtmlに変更が反映される．
-            <key>: 置き換えのためのキー．headを指定する．
+        で囲まれた部分(kamoは変数)を指定されたテンプレートファイルの中身と置き換える.
+        * update.pyは以下の三つを引数にとる.
+            <path to a template file>: ここで指定したファイルに置き換わる./includes/head.htmlを指定.
+            <path to a target directory>: ここで指定したディレクトリ内のhtmlに変更が反映される.
+            <key>: 置き換えのためのキー.headを指定する.
 
     #テキストの装飾
         * 一部の文字のみへの文字装飾
-            - first-letter,initialsというclass属性に付与されるcssがその装飾をコントロールしている．
-            - これらはmain.jsのafterLoadDOM内で実行される関数で特定のclass属性を持つ要素のclass属性に追加される．
+            - first-letter,initialsというclass属性に付与されるcssがその装飾をコントロールしている.
+            - これらはmain.jsのafterLoadDOM内で実行される関数で特定のclass属性を持つ要素のclass属性に追加される.
 
     #各要素などの管理状況
         * <head>
-            - 基本，main.jsのaddToHeadを通じて制御している．
-            - jsが読み込まれる前に必要なmetaタグなどは/includes/head.htmlをupdate.pyで手動でhtmlに反映．
+            - 基本,main.jsのaddToHeadを通じて制御している.
+            - jsが読み込まれる前に必要なmetaタグなどは/includes/head.htmlをupdate.pyで手動でhtmlに反映.
         * script
-            - 外部スクリプトを/data/config.json.scriptsに設定し，htmlのbpdyにclass属性で付与をコントロール．
+            - 外部スクリプトを/data/config.jsonのscriptsに設定し,htmlのbodyにdata-tags属性で付与をコントロール.
         * <header>
-            - 基本/includes/header.htmlをmain.jsのloadHeaderで挿入している．
-            - htmlファイルには書いた場合，そちらが優先される．
+            - 基本/includes/header.htmlをmain.jsのloadHeaderで挿入している.
+            - htmlファイルには書いた場合,そちらが優先される.
         * <footer>
-            - /includes/footer.htmlをmain.jsのloadFooterで挿入している．
-            - htmlファイルには書いた場合，そちらが優先される．
+            - /includes/footer.htmlをmain.jsのloadFooterで挿入している.
+            - htmlファイルには書いた場合,そちらが優先される.
+        * 背景画像
+            - headerにid属性がbg-imageのdivとして格納している.（スマホ対応のため）
+
+更新の仕方
+    #記事の種類
+        * pageとcontentの2種類がある.
+        * page
+            - /{{lang}}内にあるindex.htmlなどのページ.
+            - site-nav(ページ上部に表示されるHomeなどの項目群)に表示される.
+        * content
+            - /{{lang}}/{{contentTypeS}}内にあるページ.contentTypeという種類を持つ.
+            - 連載記事のようなイメージ.
+            - /{{lang}}/{{contentTypeS}}.htmlにcontentTypeのcontentが一覧で表示される.
+    #pageの作成,編集
+        * /{{lang}}内の編集したいpageのhtmlファイルを(必要なら作成し)編集する.
+        * 必要なら他言語のhtmlも(必要なら作成し)編集する.
+    #contentの作成,編集
+        * contentの種類をcontentType,その複数形をcontentTypeSと表記する.
+        * /{{lang}}/{{contentTypes}}内の編集したいhtmlファイルを(必要なら作成し)編集する.
+        * 必要なら他言語のhtmlも(必要なら作成し)編集する.
+        * 新規作成した場合,/data/contents_list/{{contentTypeS}}.jsonに記事の情報を追加する.
+        * 新規作成でない場合も/data/contents-list/{{contentTypeS}}.jsonの更新日時などを編集する.
+    #contentTypeの新規作成
+        * contentの種類をcontentType,その複数形をcontentTypeSと表記する.
+        * /data/config.jsonのcontentTypes内にcontentTypeの項を追加し,"ja","en"にはそれぞれ日本語,英語での表記を書く．
+        * /data/contents_list内に{{contentTypes}}.jsonを作成する.
+        * /{{lang}}内に{{contentTypeS}}.htmlを作成する.bodyのdata-tags属性に{{contentTypes}}-listを追加する.
+        * {{contentTypeS}}.html内にid属性が{{contentTypeS}}-listのdivを作成すると,それが記事一覧に置き換わる.
+
+外観
+    #テーマカラー
+        * テーマカラーは/data/config.jsonのcolors内のthemeに同じくcolors内のcolorBookにある色を記述することで変更できる.
+        * colorBookに項目を追加することでカスタムも可能.
