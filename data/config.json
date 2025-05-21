@@ -81,7 +81,7 @@
     },
     "contentSummary": {
         "introLength": {"ja":150,"en":200},
-        "itemsPerPage": 12
+        "itemsPerPage": 10
     },
     "langs": {
         "ja":"日本語",
