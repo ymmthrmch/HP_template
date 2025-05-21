@@ -28,22 +28,20 @@
 
 ```
 /templates/
-    content-en.html
-    content-ja.html
-    page-en.html
-    page-ja.html <- これ
+    content.html
+    page.html <- これ
 ```
 
-この`/templates`ディレクトリの中にはテンプレートが入っているので、これをコピペして作るようにしましょう。では`page-ja.html`を`/ja`の中にコピーしてください。`/ja`は以下のようになりましたか？
+この`/templates`ディレクトリの中にはテンプレートが入っているので、これをコピペして作るようにしましょう。では`page.html`を`/ja`の中にコピーしてください。`/ja`は以下のようになりましたか？
 
 ```
 /ja/examples
     examples.html
     index.html
-    page-ja.html <- 追加された
+    page.html <- 追加された
 ```
 
-では`page-ja.html`の名前を`about.html`に変更しましょう。（名前は何でも構いません）
+では`page.html`の名前を`about.html`に変更しましょう。（名前は何でも構いません）
 
 ```
 /ja/examples
@@ -181,9 +179,9 @@
 
 これはpageでdiaryを一覧表示するためのものです。contentを作成した際に、その情報をここに追加します。`contents_list`ディレクトリ内の`examples.json`の中身を`diaries`にコピーアンドペーストして凡例を書いておきましょう。
 
-次に`/ja`の中に`/template`内の`page-ja.html`をコピーアンドペーストして`diaries.html`（content typeの複数形）という名前でpageを作成します。
+次に`/ja`の中に`/template`内の`page.html`をコピーアンドペーストして`diaries.html`（content typeの複数形）という名前でpageを作成します。
 
-このpageはdiaryの一覧を表示するためのものです。必要なら`/en`の中にも、今度は`page-en.html`をコピペして作成しましょう。
+このpageはdiaryの一覧を表示するためのものです。必要なら`/en`の中にもコピペして作成しましょう。
 
 ```
 /ja/examples
@@ -222,7 +220,7 @@
 #### contentの作成
 
 diaryを作成してみましょう。
-`/template`ディレクトリ内にある`content-ja.html`を`/ja/diaries`の中にコピペして`diary1.html`（名前は何でも良い）を作成しましょう。
+`/template`ディレクトリ内にある`content.html`を`/ja/diaries`の中にコピペして`diary1.html`（名前は何でも良い）を作成しましょう。
 
 ```
 /ja/diaries/diary1.html <- 作成した
