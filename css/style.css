@@ -144,6 +144,13 @@
     color: inherit;  
 }
 
+.sns-icon{
+    width: 1.5em;
+    height: 1.5em;
+    margin: 1em 0.2em;
+    vertical-align: middle;
+}
+
 .system-message-text {
     text-align: center;
 }
@@ -198,8 +205,22 @@ body {
 }
 
 footer {
-    padding: 4em;
     background-color: var(--theme-dark);
+    padding: 4em 1em;
+    line-height: 1.5em;
+    text-align: center;
+    font-size: 0.9rem;
+    color: var(--theme-bg);
+    font-family: var(--theme-font);
+}
+
+footer a {
+    color: inherit;
+    text-decoration: none;
+}
+
+footer a:hover {
+    text-decoration: none;
 }
 
 html {
