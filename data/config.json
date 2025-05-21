@@ -67,7 +67,8 @@
         }
     },
     "contentTypes": {
-        "example": {"ja":"例","en":"examples"}
+        "example": {"ja":"例","en":"examples"},
+        "test": {"ja":"テスト用","en":"for test"}
     },
     "htmlPartials": {
         "partialName": {
@@ -78,7 +79,10 @@
             "tags": ["tags you write in pages you want to add this partial"]
         }
     },
-    "introLength": {"ja":150,"en":200},
+    "contentSummary": {
+        "introLength": {"ja":150,"en":200},
+        "itemsPerPage": 12
+    },
     "langs": {
         "ja":"日本語",
         "en":"English"

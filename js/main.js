@@ -10,21 +10,24 @@ import {
 } from './utils.js';
 
 let config = {};
-let settings = {};
 let lang = 'ja';
+let params = {}
+let settings = {};
 let t = {};
 let env = {
     "config": config,
     "lang": lang,
+    "params": params,
+    "settings": settings,
     "t": t
 }
 
 main();
 
 async function main() {
-  await initAppData();
-  await loadDOM();
-  await afterLoadingDOM();
+    await initAppData();
+    await loadDOM();
+    await afterLoadingDOM();
 }
 
 async function initAppData() {
@@ -41,12 +44,12 @@ async function loadDOM() {
 
 async function afterLoadingDOM() {
     // 変数の置き換え
-    applyInterpolateToDOM(document, env);
+    await applyInterpolateToDOM(document, env);
 
     // 文字の装飾
-    wrapFirstLetter('h3','first-letter');
-    wrapInitials('h1','initials');
-    wrapInitials('h2','initials');
+    wrapFirstLetter('h3','deco-done','first-letter');
+    wrapInitials('h1','deco-done','initials');
+    wrapInitials('h2','deco-done','initials');
 
     //言語切り替え
     setupLanguageSwitcher();
@@ -68,8 +71,9 @@ async function loadAppData() {
         fetch(`/locales/${lang}.json`).then(res => res.json()),
     ]);
     env.config = config;
-    env.settings = settings;
     env.lang = lang;
+    env.params = Object.fromEntries(new URLSearchParams(window.location.search).entries());
+    env.settings = settings;
     env.t = t;
 }
 

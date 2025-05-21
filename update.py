@@ -7,8 +7,8 @@ if len(sys.argv) != 2:
     sys.exit(1)
 
 template_path = f"./includes/head-{sys.argv[1]}.html"
-target_dir = "."
-key_name = "head-" + sys.argv[1]
+target_dir = f"./{sys.argv[1]}"
+key_name = "head"
 
 with open(template_path, 'r', encoding='utf-8') as f:
     template_content = f.read()

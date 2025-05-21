@@ -1,16 +1,74 @@
-export function applyInterpolateToDOM(root, env) {
+export async function applyInterpolateToDOM(root, env) {
     for (const node of root.childNodes) {
         if (node.nodeType === Node.TEXT_NODE) {
-            node.textContent = interpolate(node.textContent, env);
+            node.textContent = await interpolate(node.textContent, env);
         }
         if (node.nodeType === Node.ELEMENT_NODE) {
             for (const attr of node.attributes) {
-                attr.value = interpolate(attr.value, env);
+                attr.value = await interpolate(attr.value, env);
             }
 
-            applyInterpolateToDOM(node, env);
+            await applyInterpolateToDOM(node, env);
         }
     }
+}
+
+async function buildContentSummary(filename, meta, index, contentTypeS, template, env) {
+    const {config, lang, t} = env;
+    const pathToContent = `${contentTypeS}/${filename}`;
+    const res = await fetch(pathToContent);
+    if (!res.ok) {
+        console.warn(`Missing file: ${pathToContent}`);
+        return null;
+    }
+
+    const html = await res.text();
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = html;
+
+    const title = tempDiv.querySelector('.content-title')?.textContent.trim() || t.noTitle;
+    const mainText = tempDiv.querySelector('.content-text') || (() => {
+        const fallback = document.createElement('div');
+        fallback.innerHTML = t.noIntro;
+        return fallback;
+    })();
+
+    const introLength = config.contentSummary.introLength[lang] ?? config.contentSummary.introLength['ja'];
+    const intro = extractHtmlSnippet(
+        mainText,
+        introLength,
+        ` <a href="${pathToContent}" class="read-more-link">......${t.readMore}</a>`
+    );
+
+    console.log(meta.created);
+    const summaryHTML = template
+        .replace(/{{title}}/g, title)
+        .replace(/{{createdOn}}/g, t.createdOn)
+        .replace(/{{createdDate}}/g, meta.created)
+        .replace(/{{intro}}/g, intro)
+        .replace(/{{link}}/g, pathToContent);
+
+    const summaryDiv = document.createElement('div');
+    summaryDiv.innerHTML = summaryHTML;
+
+    return { index, element: summaryDiv };
+}
+
+function createSystemMessage (message, classToAdd, title="") {
+    const div = document.createElement('div');
+    if (title && title.length > 0) {
+        const divTitle = document.createElement('h3');
+        divTitle.className = `box-title`;
+        divTitle.textContent = title;
+        div.append(divTitle);
+        div.append(document.createElement('hr'));
+    }
+    div.className = `box system-message ${classToAdd}`;
+    const divMessage = document.createElement('p');
+    divMessage.className = "system-message-text";
+    divMessage.textContent = message;
+    div.append(divMessage);
+    return div
 }
 
 function extractHtmlSnippet(domNode, limit = 100, suffix = '') {
@@ -90,10 +148,11 @@ export function importOneScript(url, deferFlag = true) {
     });
 }
 
-export function interpolate(template,env) {
+export async function interpolate(template, env) {
     const config = env.config;
     const lang = env.lang;
-    const unknown = '???'
+    const unknown = '???';
+
     const specialKeys = {
         lang: () => lang ?? unknown,
         langLabel: () => config.langs?.[lang] ?? unknown,
@@ -104,82 +163,104 @@ export function interpolate(template,env) {
         }
     };
 
-    const getValueFromPath = (path) => {
-        return path.split('.').reduce((acc, key) => {
-            if (acc && typeof acc === 'object' && key in acc) {
-                return acc[key];
-            }
-            return undefined;
-        }, config);
-    };
+    async function getValueFromPath(arg) {
+        const [maybeUrl, maybePath] = arg.split(':');
 
-    return template.replace(/{{(.*?)}}/g, (_, key) => {
-        const trimmedKey = key.trim();
-        if (trimmedKey in specialKeys) {
-            return specialKeys[trimmedKey]();
+        if (maybePath !== undefined) {
+            const res = await fetch(maybeUrl);
+            if (!res.ok) throw new Error(`Failed to fetch config at ${maybeUrl}`);
+            const remoteConfig = await res.json();
+            return maybePath.split('.').reduce((acc, key) => {
+                return acc && typeof acc === 'object' && key in acc ? acc[key] : undefined;
+            }, remoteConfig);
+        } else {
+            return maybeUrl.split('.').reduce((acc, key) => {
+                return acc && typeof acc === 'object' && key in acc ? acc[key] : undefined;
+            }, config);
         }
-
-        const val = getValueFromPath(trimmedKey);
-        return val !== undefined ? val : unknown;
-    });
-}
-
-async function loadContents(contentType, pluralize, env) {
-    const contentTypeS = pluralize(contentType).toLowerCase();
-    const contentsList = document.getElementById(`${contentTypeS}-list`);
-    if (!contentsList) return;
-
-    const config = env.config
-    const lang = env.lang
-    const t = env.t
-    const listRes = await fetch(`/data/contents_list/${contentTypeS}.json`)
-    const allContents = await listRes.json()
-    if (!allContents || !Array.isArray(allContents) || allContents.length === 0) {
-        const noContentsMessage = document.createElement('div');
-        noContentsMessage.className = 'content no-contents-message';
-        noContentsMessage.textContent = t.noContents.replace(
-            "{{contentType}}",config.contentTypes[contentType][lang]
-        ) ?? 'No contents here.';
-        contentsList.appendChild(noContentsMessage);
-        return;
     }
 
-    const contents = allContents
-        .filter(contents => contents.lang.includes(lang))
-        .sort((a, b) => new Date(b.created) - new Date(a.created));
+    const matches = [...template.matchAll(/{{(.*?)}}/g)];
 
-    const templateRes = await fetch(`/includes/content-summary.html`)
-    const template = await templateRes.text()
-    const renderPromises = contents.map(async file => {
-        const pathToContent = contentTypeS + '/' + file.filename;
+    const replacements = await Promise.all(
+        matches.map(async ([fullMatch, key]) => {
+            const trimmedKey = key.trim();
+            let value;
 
-        const res = await fetch(pathToContent)
-        const html = await res.text()
-        const tempDiv = document.createElement('div');
-        tempDiv.innerHTML = html;
-        const title = tempDiv.querySelector('.content-title')?.textContent.trim() || t.noTitle;
-        const mainText = tempDiv.querySelector('.content-text') || (() => {
-            const fallback = document.createElement('div');
-            fallback.innerHTML = t.noIntro;
-            return fallback;
-        })();
-        const introLength = config.introLength[lang] ?? config.introLength['ja'];
-        const intro = extractHtmlSnippet(
-            mainText,
-            introLength,
-            ` <a href="${contentTypeS}/${file.filename}" class="read-more-link">......${t.readMore}</a>`
-        );
+            if (trimmedKey in specialKeys) {
+                value = specialKeys[trimmedKey]();
+            } else {
+                try {
+                    value = await getValueFromPath(trimmedKey);
+                } catch (e) {
+                    console.error(e);
+                    value = unknown;
+                }
+            }
+            console.log("interpolating", key, "→", value);
 
-        const summary = template
-            .replace(/{{title}}/g, title)
-            .replace(/{{intro}}/g, intro)
-            .replace(/{{link}}/g, pathToContent);
+            return { match: fullMatch, value: value !== undefined ? value : unknown };
+        })
+    );
 
-        const summaryDiv = document.createElement('div');
-        summaryDiv.innerHTML = summary;
-        contentsList.appendChild(summaryDiv);
-    })
-    return Promise.all(renderPromises);
+    let result = template;
+    for (const { match, value } of replacements) {
+        result = result.replaceAll(match, value);
+    }
+
+    return result;
+}
+
+async function loadContents(contentType, pluralize, env, currentPage) {
+    const contentTypeS = pluralize(contentType).toLowerCase();
+    const contentsList = document.getElementById(`${contentTypeS}-list`);
+    if (!contentsList) {
+        throw new Error(`Element with id ${contentTypeS}-list is not found.`);
+    }
+
+    const { config, lang, t } = env;
+    const listRes = await fetch(`/data/contents_list/${contentTypeS}.json`);
+    const allContentsObj = await listRes.json();
+    if (!allContentsObj || typeof allContentsObj !== 'object') {
+        throw new Error("JSON file is not found or is not a valid object.");
+    }
+
+    // entries: [filename, metadata]
+    const allContents = Object.entries(allContentsObj);
+
+    const orderedContents = allContents
+        .filter(([_, meta]) => Array.isArray(meta.lang) && meta.lang.includes(lang))
+        .sort((a, b) => new Date(b[1].created) - new Date(a[1].created));
+
+    if (orderedContents.length === 0) {
+        const message = t.noContents.replace(
+            "{{contentType}}", config.contentTypes[contentType][lang]
+        ) ?? 'No contents here.';
+        const noContentsMessage = createSystemMessage(message, 'no-contents-message');
+        contentsList.appendChild(noContentsMessage);
+        return { renderPromise: Promise.resolve(), totalItems: 0 };
+    }
+
+    const itemsPerPage = config.contentSummary.itemsPerPage;
+    const start = itemsPerPage * (currentPage - 1);
+    const end = itemsPerPage * currentPage;
+    const contents = orderedContents.slice(start, end);
+
+    const templateRes = await fetch(`/includes/content-summary.html`);
+    const template = await templateRes.text();
+
+    const summaries = await Promise.all(
+        contents.map(([filename, meta], index) =>
+            buildContentSummary(filename, meta, index, contentTypeS, template, env)
+        )
+    );
+
+    summaries
+        .filter(Boolean)
+        .sort((a, b) => a.index - b.index)
+        .forEach(({ element }) => contentsList.appendChild(element));
+
+    return orderedContents.length;
 }
 
 export async function loadContentsList(pluralize, env) {
@@ -189,7 +270,9 @@ export async function loadContentsList(pluralize, env) {
     const contentTypesList = Object.keys(config.contentTypes);
     try {
         const validTypes = contentTypesList.filter(word => tagsList.includes(pluralize(word) + "-list"));
-        const promises = validTypes.map(contentType => loadContents(contentType, pluralize, env));
+        const rawPage = env.params.page;
+        const page = Number.isInteger(Number(rawPage)) ? Number(rawPage) : 1;
+        const promises = validTypes.map(contentType => renderPage(page, contentType, pluralize, env));
         await Promise.all(promises);
     } catch (err) {
         console.error(`loadContentsList error:`, err);
@@ -206,7 +289,80 @@ export async function loadOneHTMLPartial(url, target, position) {
     if (container) {
         container.insertAdjacentElement(position, tmp);
     } else {
-        console.warn(`Target element "${target}" not found for partial "${partial}"`);
+        console.warn(`Target element "${target}" not found for partial "${url}"`);
+    }
+}
+
+async function renderPage(page, contentType, pluralize, env) {
+    const totalItems = await loadContents(contentType, pluralize, env, page);
+    renderPagination(
+        totalItems,
+        env.config.contentSummary.itemsPerPage,
+        page,
+    );
+}
+
+function renderPagination(
+    totalItems,
+    itemsPerPage,
+    currentPage,
+    ) {
+    if (!Number.isInteger(totalItems)) return;
+    const totalPages = Math.ceil(totalItems / itemsPerPage);
+    if (totalPages < 2 ) return;
+    const pagination = document.getElementById('pagination');
+    pagination.innerHTML = '';
+
+    const createButton = (text, page) => {
+        const btn = document.createElement('button');
+        btn.textContent = text;
+        btn.className = (page === currentPage) ? 'active' : '';
+
+        btn.addEventListener('click', () => {
+            const url = new URL(window.location.href);
+            url.searchParams.set('page', page);
+            window.location.href = url.toString();
+        });
+
+        return btn;
+    };
+
+    const createDots = () => {
+        const dots = document.createElement('button');
+        dots.textContent = "･･････";
+        dots.className = "virtual-button";
+        dots.disabled = true;
+        return dots;
+    };
+
+    const integer = 1;
+    const allBtns = integer * 2 + 1;
+    if (totalPages <= allBtns + 4) {
+        for (let i = 1; i <= totalPages; i++) {
+            pagination.appendChild(createButton(String(i), i));
+        }
+    } else if (0 < currentPage && currentPage < allBtns + 2) {
+        for (let i = 1; i <= allBtns + 2; i++) {
+            pagination.appendChild(createButton(String(i), i));
+        }
+        pagination.appendChild(createDots());
+        pagination.appendChild(createButton(String(totalPages), totalPages));
+    } else if (allBtns + 2 <= currentPage && currentPage <= totalPages - allBtns -1) {
+        pagination.appendChild(createButton(String(1), 1));
+        pagination.appendChild(createDots());
+        for (let i = currentPage - integer; i <= currentPage + integer; i++) {
+            pagination.appendChild(createButton(String(i), i));
+        }
+        pagination.appendChild(createDots());
+        pagination.appendChild(createButton(String(totalPages), totalPages));
+    } else if (totalPages - allBtns - 1 < currentPage && currentPage <= totalPages) {
+        pagination.appendChild(createButton(String(1), 1));
+        pagination.appendChild(createDots());
+        for (let i = totalPages - allBtns -1; i <= totalPages; i++) {
+            pagination.appendChild(createButton(String(i), i));
+        }
+    } else {
+        throw new Error('Page number is out of range');
     }
 }
 
@@ -254,7 +410,7 @@ export async function tagMatchingValuation(contextsList, func, args, kwargs) {
     await Promise.all(promises);
 }
 
-export function wrapFirstLetter(targetTag, classToAdd) {
+export function wrapFirstLetter(targetTag, doneClass, classToAdd) {
     const targets = document.querySelectorAll(targetTag);
     function findFirstTextNode(node) {
         for (let child of node.childNodes) {
@@ -268,7 +424,7 @@ export function wrapFirstLetter(targetTag, classToAdd) {
         return null;
     }
     targets.forEach(target => {
-        if (target.querySelector(classToAdd)) return;
+        if (target.classList.contains(doneClass)) return;
 
         const textNode = findFirstTextNode(target);
         if (!textNode) return;
@@ -289,14 +445,16 @@ export function wrapFirstLetter(targetTag, classToAdd) {
         parent.insertBefore(span, textNode);
         parent.insertBefore(restText, textNode);
         parent.removeChild(textNode);
+
+        target.classList.add(doneClass);
     });
 }
 
-export function wrapInitials(targetTag, classToAdd) {
+export function wrapInitials(targetTag, doneClass, classToAdd) {
     const targets = document.querySelectorAll(targetTag);
 
     targets.forEach(el => {
-        if (el.querySelector(classToAdd)) return;
+        if (el.classList.contains(doneClass)) return;
 
         const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, {
             acceptNode: node => {
@@ -331,5 +489,7 @@ export function wrapInitials(targetTag, classToAdd) {
 
             textNode.parentNode.replaceChild(fragment, textNode);
         });
+
+        el.classList.add(doneClass);
     });
 }

@@ -81,6 +81,23 @@
     margin: 0em min(1vw, 1em);
 }
 
+#pagination {
+    display: flex;
+    justify-content: center;
+    margin-top: 2em;
+}
+
+#pagination .active{
+    background-color: var(--theme-tp-dark);
+    color: var(--theme-bg);
+}
+
+#pagination .virtual-button{
+    border: none;
+    background-color: transparent;
+    vertical-align: auto;
+}
+
 /* class */
 .accent {
     color: var(--accent-color);
@@ -89,8 +106,8 @@
 .box {
     background-color: var(--theme-tp-light);
     color: var(--theme-text);
-    margin: 0.5em auto;
-    padding: 0.3em 1.5em 0.8em 1.5em;
+    margin: 1em auto;
+    padding: 0.8em 1.5em 0.8em 1.5em;
     box-shadow: 0.1em 0.1em 0.2em var(--theme-tp-dark);
     border-radius: 0.1em;
     text-shadow: none;
@@ -120,24 +137,35 @@
     -webkit-text-stroke: 0.05em var(--theme-dark);
 }
 
+.plain-text {
+    font-size: 0.8em;
+    text-decoration: none;
+    font-weight: normal;
+    color: inherit;  
+}
+
+.system-message-text {
+    text-align: center;
+}
+
 .with-dark-icon {
     display: inline-flex;
     align-items: center;
-    padding-left: 1.0em; /* 左側に余白を確保（背景画像がはみ出ないように） */
+    padding-left: 1.0em;
     background-image: var(--icon-image-dark);
     background-repeat: no-repeat;
     background-position: 0.1em center;
-    background-size: 0.8em 0.8em; /* 必要に応じてサイズ調整 */
+    background-size: 0.8em 0.8em;
 }
 
 .with-light-icon {
     display: inline-flex;
     align-items: center;
-    padding-left: 1.0em; /* 左側に余白を確保（背景画像がはみ出ないように） */
+    padding-left: 1.0em;
     background-image: var(--icon-image-light);
     background-repeat: no-repeat;
     background-position: 0.1em center;
-    background-size: 0.8em 0.8em; /* 必要に応じてサイズ調整 */
+    background-size: 0.8em 0.8em;
 }
 
 /* tag */
@@ -213,7 +241,7 @@ header hr {
 
 hr {
     border: none;
-    margin: 1em 0em;
+    margin: 0.5em 0em;
     height: 1px;
     background-color: var(--theme-text);
 }
@@ -221,11 +249,15 @@ hr {
 main {
     color: var(--normal-text);
     text-shadow:
-        0em 0em 0.3em var(--theme-bg),
-        0.1em 0.1em 0.3em var(--theme-bg),
-        0.1em -0.1em 0.3em var(--theme-bg),
-        -0.1em 0.1em 0.3em var(--theme-bg),
-        -0.1em -0.1em 0.3em var(--theme-bg);
+        0em 0em 0.4em var(--theme-bg),
+        0.1em 0em 0.2em var(--theme-bg),
+        -0.1em 0em 0.2em var(--theme-bg),
+        0em 0.1em 0.2em var(--theme-bg),
+        0em -0.1em 0.2em var(--theme-bg),
+        0.1em 0.1em 0.2em var(--theme-bg),
+        0.1em -0.1em 0.2em var(--theme-bg),
+        -0.1em 0.1em 0.2em var(--theme-bg),
+        -0.1em -0.1em 0.2em var(--theme-bg);
     margin: 2em 4em;
     flex: 1;
 }
@@ -257,5 +289,9 @@ main {
     #language-switcher {
             position: static;
         margin-bottom: 0.7rem;
+    }
+
+    #pagination button{
+        min-width: 10vw;
     }
 }
